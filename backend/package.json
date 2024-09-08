@@ -1,0 +1,34 @@
+{
+  "name": "@true-story/api",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node --files src/index.ts",
+    "db:migrate": "db-migrate up",
+    "migration:up": "db-migrate up",
+    "migrate:up": "db-migrate up",
+    "migration:down": "db-migrate down",
+    "migrate:down": "db-migrate down",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^5.0.0-beta.3",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.12.0",
+    "sequelize": "^6.37.3",
+    "ts-node": "^10.9.2",
+    "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/morgan": "^1.9.9",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
+    "nodemon": "^3.1.4"
+  }
+}
