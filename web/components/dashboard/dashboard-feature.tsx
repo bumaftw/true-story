@@ -1,49 +1,38 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { IconNews } from '@tabler/icons-react';
-import { getArticles } from '@/services/getArticles';
-import { useAuth } from '@/hooks/useAuth';
-import { useWallet } from '@solana/wallet-adapter-react';
-
-export const ARTICLES_QUERY_KEY = 'articles_query_key';
+import { IconLayoutDashboard } from '@tabler/icons-react';
+import Link from 'next/link';
 
 export default function DashboardFeature() {
-  const { connected } = useWallet();
-  const { getToken } = useAuth();
-  const { data: articles } = useQuery({
-    queryKey: [ARTICLES_QUERY_KEY],
-    queryFn: async () => {
-      const token = await getToken();
-      return await getArticles({ token });
-    },
-    enabled: connected,
-  });
-
   return (
-    <div>
-      <div className="max-w-xl mx-auto py-6 sm:px-6 lg:px-8 text-center">
-        <div className="space-y-2">
+    <div className="min-h-screen bg-gray-100">
+      {/* Hero Section */}
+      <div className="py-12 text-center">
+        <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center py-4">
-            <IconNews size={32} className="text-primary mr-2" />
-            <h1 className="text-3xl text-primary">Latest News</h1>
+            <IconLayoutDashboard size={40} className="text-primary mr-2" />
+            <h1 className="text-4xl font-bold text-primary">
+              A Radically Better News Platform
+            </h1>
           </div>
-          {articles?.map((article, index) => (
-            <div key={index}>
-              <div className="card lg:card-side bg-base-100 shadow-xl">
-                <figure>
-                  <img src={article.imageUrl} />
-                </figure>
-                <div className="card-body">
-                  <h2 className="card-title">{article.title}</h2>
-                  <p>{article.content}</p>
-                  <div className="card-actions justify-end">
-                    <button className="btn btn-primary">Read</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+          <p className="text-lg text-gray-600 mt-4">
+            Stay informed with the latest articles from our community. Your one-stop destination for trusted news.
+          </p>
+        </div>
+      </div>
+
+      {/* Call to Action */}
+      <div className="max-w-xl mx-auto py-6 sm:px-6 lg:px-8 text-center">
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Ready to dive into the latest news?
+          </h2>
+          <p className="text-gray-600">
+            Explore our curated articles, created and vetted by our trusted contributors.
+          </p>
+          <Link href="/articles">
+            <button className="btn btn-primary mt-4">Explore Articles</button>
+          </Link>
         </div>
       </div>
     </div>

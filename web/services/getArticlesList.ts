@@ -2,7 +2,7 @@ import { request } from '@/api';
 import { ARTICLES_ENDPOINT } from '@/constants';
 import { ArticleAttributes } from '@/types';
 
-export const getArticles = async ({
+export const getArticlesList = async ({
   token,
 }: {
   token: string | null;

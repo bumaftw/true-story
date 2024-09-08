@@ -59,7 +59,7 @@ export const verifySignature = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Invalid signature' });
     }
 
-    const token = jwt.sign({ publicKey }, JWT_SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ publicKey }, JWT_SECRET_KEY);
 
     user.nonce = null;
     await user.save();
