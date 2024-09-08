@@ -1,25 +1,58 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { IconNews } from '@tabler/icons-react';
 import { getArticlesList } from '@/services/getArticlesList';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
 
-export const ARTICLES_QUERY_KEY = 'articles_list_query_key';
+const ARTICLES_QUERY_KEY = 'articles_list_query_key';
+const ARTICLES_PER_PAGE = 5;
 
 export default function ArticleFeature() {
   const { connected } = useWallet();
   const { getToken } = useAuth();
-  const { data: articles } = useQuery({
-    queryKey: [ARTICLES_QUERY_KEY],
-    queryFn: async () => {
-      const token = await getToken();
-      return await getArticlesList({ token });
-    },
-    enabled: connected,
-  });
+
+  // Infinite query for loading more articles
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery(
+    {
+      queryKey: [ARTICLES_QUERY_KEY],
+      queryFn: async ({ pageParam = 0 }) => {
+        const token = await getToken();
+        return await getArticlesList({ token, limit: ARTICLES_PER_PAGE, offset: pageParam });
+      },
+      initialPageParam: 0,
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.length < ARTICLES_PER_PAGE) return undefined;
+        return allPages.flat().length;
+      },
+      enabled: connected,
+    }
+  );
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100 &&
+        hasNextPage &&
+        !isFetchingNextPage
+      ) {
+        fetchNextPage();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const articles = data?.pages.flat() || [];
 
   return (
     <div className="pt-10 pb-6">
@@ -35,7 +68,7 @@ export default function ArticleFeature() {
 
         {/* Article Cards (Single Column) */}
         <div className="space-y-6">
-          {articles?.map((article, index) => (
+          {articles.map((article, index) => (
             <div key={index} className="card bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300">
               <figure>
                 <img
@@ -63,14 +96,14 @@ export default function ArticleFeature() {
               </div>
             </div>
           ))}
-        </div>
 
-        {/* No articles fallback */}
-        {!articles?.length && (
-          <div className="text-center mt-10">
-            <p className="text-gray-500">No articles available at the moment. Check back later!</p>
-          </div>
-        )}
+          {/* Loading more spinner */}
+          {isFetchingNextPage && (
+            <div className="text-center py-6">
+              <span className="loading loading-spinner loading-lg"></span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
