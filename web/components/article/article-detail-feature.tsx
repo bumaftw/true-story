@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getArticle } from '@/services/getArticle';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
-
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
+import { ExplorerLink } from '../cluster/cluster-ui';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
 
@@ -48,7 +48,14 @@ export default function ArticleDetailFeature() {
 
       {/* Author and Created Date */}
       <div className="flex justify-between items-center mb-6">
-        <div className="text-sm text-gray-500">Author ID: {article.authorId || 'Unknown'}</div>
+        {/* Author's Public Key linked to Solana Explorer */}
+        <div className="text-sm text-gray-500">
+          Author: <ExplorerLink
+              path={`address/${article.author!.publicKey}`}
+              label={article.author!.publicKey}
+              className="text-primary underline"
+            />
+        </div>
         <div className="text-sm text-gray-500">
           Published on: {format(new Date(article.createdAt), 'MMMM dd, yyyy')}
         </div>
