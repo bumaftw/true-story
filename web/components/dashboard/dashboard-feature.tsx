@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function DashboardFeature() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="bg-gray-100">
       {/* Hero Section */}
       <div className="py-12 text-center">
         <div className="max-w-4xl mx-auto">

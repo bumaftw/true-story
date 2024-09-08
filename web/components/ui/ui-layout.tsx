@@ -37,8 +37,8 @@ export function UiLayout({
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar */}
-      <header className="navbar bg-gray-300 text-black flex-col md:flex-row py-4 space-y-2 md:space-y-0 px-4">
+      {/* Fixed Navbar */}
+      <header className="navbar bg-gray-300 text-black flex-col md:flex-row py-4 space-y-2 md:space-y-0 px-4 fixed top-0 w-full z-10">
         <div className="flex-1 flex items-center">
           <Link className="btn btn-ghost normal-case text-xl" href="/">
             <img className="h-8 md:h-12" alt="Logo" src="/logo.png" />
@@ -59,11 +59,11 @@ export function UiLayout({
         </div>
       </header>
 
-      {/* Main Content */}
-      <ClusterChecker>
-        <AccountChecker />
-      </ClusterChecker>
-      <main className="flex-grow container mx-auto px-4 lg:px-12 mb-14">
+      {/* Adjusted Content Area to account for fixed header and footer */}
+      <main className="flex-grow container mx-auto px-4 lg:px-12 mt-20 mb-16">
+        <ClusterChecker>
+          <AccountChecker />
+        </ClusterChecker>
         <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         <Toaster position="bottom-right" />
       </main>
