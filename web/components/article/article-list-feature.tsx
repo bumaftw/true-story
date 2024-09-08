@@ -22,7 +22,7 @@ export default function ArticleFeature() {
   });
 
   return (
-    <div className="py-10 mb-10">
+    <div className="pt-10 pb-6">
       <div className="max-w-3xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12">

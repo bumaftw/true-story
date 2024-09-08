@@ -63,7 +63,7 @@ export function UiLayout({
       <ClusterChecker>
         <AccountChecker />
       </ClusterChecker>
-      <main className="flex-grow container mx-auto px-4 lg:px-12">
+      <main className="flex-grow container mx-auto px-4 lg:px-12 mb-14">
         <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         <Toaster position="bottom-right" />
       </main>
