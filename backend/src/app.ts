@@ -3,8 +3,8 @@ import morgan from 'morgan';
 import router from './routes';
 import logger from './shared/logger';
 import { NotFoundError } from './shared/errors';
-import { errorHandlerMiddleware } from './middlewares/error.middleware';
-import { corsMiddleware } from './middlewares/cors.middleware';
+import { errorHandlerMiddleware } from './middlewares/errorMiddleware';
+import { corsMiddleware } from './middlewares/corsMiddleware';
 
 const app: Express = express();
 

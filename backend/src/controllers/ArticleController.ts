@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Article } from '../models';
-import * as ArticleService from '../services/ArticleService';
+import * as ArticleService from '../services/articleService';
 
 export async function getArticles(
   req: Request,
