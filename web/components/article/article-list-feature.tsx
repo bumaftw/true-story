@@ -39,17 +39,25 @@ export default function ArticleFeature() {
             <div key={index} className="card bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300">
               <figure>
                 <img
-                  src={article.imageUrl || '/default-image.jpg'} // Default image if no imageUrl
+                  src={article.imageUrl || '/default-image.jpg'}
                   alt={article.title}
                   className="h-64 w-full object-cover rounded-t-lg"
                 />
               </figure>
               <div className="card-body">
                 <h2 className="card-title text-2xl font-semibold">{article.title}</h2>
-                <p className="text-gray-700 line-clamp-3">{article.content}</p> {/* Limiting content preview */}
+
+                {/* Content preview limited to a few lines */}
+                <p className="text-gray-700 line-clamp-3">
+                  {article.content}
+                </p>
+
                 <div className="card-actions justify-end mt-4">
+                  {/* Read More Button to Navigate to Article Details */}
                   <Link href={`/articles/${article.id}`} passHref>
-                    <button className="btn btn-outline btn-primary hover:btn-primary-focus">Read More</button>
+                    <button className="btn btn-outline btn-primary hover:btn-primary-focus">
+                      Read More
+                    </button>
                   </Link>
                 </div>
               </div>

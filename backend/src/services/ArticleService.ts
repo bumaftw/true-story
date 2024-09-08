@@ -1,6 +1,6 @@
 import { Article } from '../models/Article';
 import { User } from '../models/User';
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import { NotFoundError } from '../shared/errors'
 
 export async function createArticle(articleData: Partial<Article>): Promise<Article> {
@@ -52,6 +52,17 @@ export async function getArticles(params: GetArticlesParams = {}): Promise<Artic
         attributes: ['id', 'username', 'publicKey'],
       },
     ],
+    attributes: {
+      include: [
+        'id',
+        'title',
+        'imageUrl',
+        'authorId',
+        'createdAt',
+        'updatedAt',
+        [Sequelize.fn('LEFT', Sequelize.col('content'), 300), 'content'], // Limit content to 100 characters
+      ],
+    },
     limit,
     offset,
     order: [['createdAt', 'DESC']],
