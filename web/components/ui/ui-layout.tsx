@@ -70,8 +70,19 @@ export function UiLayout({
 
       {/* Fixed Footer */}
       <footer className="footer footer-center p-4 bg-gray-300 text-gray-600 fixed bottom-0 w-full">
-        <aside>
-          <p>Building a radically better news platform</p>
+        <aside className="flex items-center justify-center">
+          <p>Powered by</p>
+          <a
+            href="https://solana.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="/solana-sol-logo-horizontal.svg"
+              alt="Solana"
+              className="h-6"
+            />
+          </a>
         </aside>
       </footer>
     </div>

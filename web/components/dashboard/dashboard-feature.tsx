@@ -1,6 +1,5 @@
 'use client';
 
-import { IconLayoutDashboard } from '@tabler/icons-react';
 import Link from 'next/link';
 
 export default function DashboardFeature() {
@@ -10,13 +9,12 @@ export default function DashboardFeature() {
       <div className="py-12 text-center">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center py-4">
-            <IconLayoutDashboard size={40} className="text-primary mr-2" />
             <h1 className="text-4xl font-bold text-primary">
-              A Radically Better News Platform
+              Stories from the world
             </h1>
           </div>
           <p className="text-lg text-gray-600 mt-4">
-            Stay informed with the latest articles from our community. Your one-stop destination for trusted news.
+            Pay and read. No subscriptions. No ads.
           </p>
         </div>
       </div>
@@ -31,7 +29,7 @@ export default function DashboardFeature() {
             Explore our curated articles, created and vetted by our trusted contributors.
           </p>
           <Link href="/articles">
-            <button className="btn btn-primary mt-4">Explore Articles</button>
+            <button className="btn btn-primary mt-4">READ</button>
           </Link>
         </div>
       </div>
