@@ -1,13 +1,28 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional, NonAttribute } from 'sequelize';
 import sequelize from './sequelize';
+import { Article } from './Article';
+import { User } from './User';
 
-export class Payment extends Model {
-  public id!: number;
-  public articleId!: number;
-  public userId!: number;
-  public amount!: number;
-  public transactionId!: string;
-  public readonly createdAt!: Date;
+export type PaymentAttributes = {
+  id: number;
+  articleId: number;
+  userId: number;
+  amount: number;
+  transactionId: string;
+  createdAt: Date;
+};
+
+export type PaymentCreationAttributes = Optional<PaymentAttributes, 'id' | 'createdAt'>;
+
+export class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implements PaymentAttributes {
+  declare id: number;
+  declare articleId: number;
+  declare userId: number;
+  declare amount: number;
+  declare transactionId: string;
+  declare readonly createdAt: Date;
+  declare article?: NonAttribute<Article>;
+  declare user?: NonAttribute<User>;
 }
 
 Payment.init(
@@ -59,3 +74,5 @@ Payment.init(
     timestamps: false,
   }
 );
+
+export default Payment;

@@ -1,25 +1,35 @@
-import { Article } from '../models/Article';
-import { User } from '../models/User';
+import { Article, ArticleCreationAttributes, User, Payment } from '../models';
 import { Op, Sequelize } from 'sequelize';
-import { NotFoundError } from '../shared/errors'
+import { NotFoundError } from '../shared/errors';
 
-export async function createArticle(articleData: Partial<Article>): Promise<Article> {
+export async function createArticle(articleData: ArticleCreationAttributes): Promise<Article> {
   return Article.create(articleData);
 }
 
-export async function getArticleById(id: number): Promise<Article> {
+export async function getArticleById(id: number, userId: number): Promise<Article> {
   const article = await Article.findByPk(id, {
     include: [
       {
         model: User,
         as: 'author',
         attributes: ['id', 'username', 'publicKey'],
+        required: true,
+      },
+      {
+        model: Payment,
+        as: 'payments',
+        where: { userId },
+        required: false,
       },
     ],
   });
 
   if (!article) {
     throw new NotFoundError('Article not found');
+  }
+
+  if (!article.payments?.length && article.author?.id !== userId) {
+    article.content = article.content.slice(0, 300);
   }
 
   return article;
@@ -72,19 +82,24 @@ export async function getArticles(params: GetArticlesParams = {}): Promise<Artic
 export async function updateArticle(
   id: number,
   updates: Partial<Article>
-): Promise<Article | null> {
-  const article = await getArticleById(id);
+): Promise<Article> {
+  const article = await Article.findByPk(id);
+
   if (!article) {
-    return null;
+    throw new NotFoundError('Article not found');
   }
+
   return article.update(updates);
 }
 
 export async function deleteArticle(id: number): Promise<boolean> {
-  const article = await getArticleById(id);
+  const article = await Article.findByPk(id);
+
   if (!article) {
-    return false;
+    throw new NotFoundError('Article not found');
   }
+
   await article.destroy();
+
   return true;
 }

@@ -1,14 +1,36 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Optional, NonAttribute } from 'sequelize';
 import sequelize from './sequelize';
+import { User } from './User';
+import { Payment } from './Payment';
 
-export class Article extends Model {
-  public id!: number;
-  public title!: string;
-  public content!: string;
-  public imageUrl?: string;
-  public authorId?: number;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+export type ArticleAttributes = {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl?: string | null;
+  authorId?: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type ArticleCreationAttributes = Optional<
+  ArticleAttributes,
+  'id' | 'imageUrl' | 'createdAt' | 'updatedAt'
+>;
+
+export class Article
+  extends Model<ArticleAttributes, ArticleCreationAttributes>
+  implements ArticleAttributes
+{
+  declare id: number;
+  declare title: string;
+  declare content: string;
+  declare imageUrl: string | null;
+  declare authorId: number | null;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
+  declare author?: NonAttribute<User>;
+  declare payments?: NonAttribute<Payment[]>;
 }
 
 Article.init(
