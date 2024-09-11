@@ -8,7 +8,7 @@ export function errorHandlerMiddleware(
   _req: Request,
   res: Response<ErrorResponse>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: NextFunction,
+  _next: NextFunction
 ): Response {
   const isHttpError = error instanceof HttpError;
   const isJsonFormatError = error instanceof SyntaxError && 'body' in error;

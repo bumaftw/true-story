@@ -12,9 +12,15 @@ export type PaymentAttributes = {
   createdAt: Date;
 };
 
-export type PaymentCreationAttributes = Optional<PaymentAttributes, 'id' | 'createdAt'>;
+export type PaymentCreationAttributes = Optional<
+  PaymentAttributes,
+  'id' | 'createdAt'
+>;
 
-export class Payment extends Model<PaymentAttributes, PaymentCreationAttributes> implements PaymentAttributes {
+export class Payment
+  extends Model<PaymentAttributes, PaymentCreationAttributes>
+  implements PaymentAttributes
+{
   declare id: number;
   declare articleId: number;
   declare userId: number;

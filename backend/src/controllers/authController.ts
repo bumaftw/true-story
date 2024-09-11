@@ -20,7 +20,9 @@ export const getNonce = async (req: Request, res: Response) => {
   }
 
   const nonce = generateNonce();
-  const [, [user]] = await userService.updateUserByPublicKey(publicKey, { nonce });
+  const [, [user]] = await userService.updateUserByPublicKey(publicKey, {
+    nonce,
+  });
   if (!user) {
     await userService.createUser({
       publicKey,
@@ -37,7 +39,9 @@ export const verifySignature = async (req: Request, res: Response) => {
   const { publicKey, signature } = req.body;
 
   if (!publicKey || !signature) {
-    return res.status(400).json({ error: 'Public key and signature are required' });
+    return res
+      .status(400)
+      .json({ error: 'Public key and signature are required' });
   }
 
   const user = await userService.getUserByPublicKey(publicKey);
@@ -45,7 +49,9 @@ export const verifySignature = async (req: Request, res: Response) => {
     return res.status(404).json({ error: 'User not found' });
   }
   if (!user.nonce) {
-    return res.status(400).json({ error: 'No nonce found for this public key' });
+    return res
+      .status(400)
+      .json({ error: 'No nonce found for this public key' });
   }
 
   try {
@@ -53,7 +59,11 @@ export const verifySignature = async (req: Request, res: Response) => {
     const publicKeyInstance = new PublicKey(publicKey).toBytes();
     const signatureBuffer = bs58.decode(signature);
 
-    const isValid = nacl.sign.detached.verify(message, signatureBuffer, publicKeyInstance);
+    const isValid = nacl.sign.detached.verify(
+      message,
+      signatureBuffer,
+      publicKeyInstance
+    );
 
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid signature' });

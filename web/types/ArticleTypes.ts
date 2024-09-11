@@ -1,4 +1,4 @@
-import { UserAttributes } from './UserTypes'
+import { UserAttributes } from './UserTypes';
 
 export type ArticleAttributes = {
   id: number;

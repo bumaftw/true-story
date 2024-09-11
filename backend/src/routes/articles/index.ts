@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import { getArticles, getArticleById } from '../../controllers/articleController';
+import {
+  getArticles,
+  getArticleById,
+} from '../../controllers/articleController';
 import { verifyToken } from '../../middlewares/authMiddleware';
 
 const router = Router();

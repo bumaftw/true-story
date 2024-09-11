@@ -8,7 +8,7 @@ const allowedOrigins = [clientOrigin];
 export function corsMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ): void | Response {
   const origin = req.headers.origin
     ? req.headers.origin.toString().toLowerCase()
@@ -22,7 +22,7 @@ export function corsMiddleware(
 
   res.setHeader(
     'Access-Control-Allow-Methods',
-    'GET, POST, PATCH, PUT, DELETE',
+    'GET, POST, PATCH, PUT, DELETE'
   );
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');

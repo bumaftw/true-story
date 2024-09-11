@@ -26,7 +26,8 @@ export default function DashboardFeature() {
             Ready to dive into the latest news?
           </h2>
           <p className="text-gray-600">
-            Explore our curated articles, created and vetted by our trusted contributors.
+            Explore our curated articles, created and vetted by our trusted
+            contributors.
           </p>
           <Link href="/articles">
             <button className="btn btn-primary mt-4">READ</button>

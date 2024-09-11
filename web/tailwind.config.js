@@ -21,19 +21,16 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('daisyui'),
-    require('@tailwindcss/line-clamp'),
-  ],
+  plugins: [require('daisyui'), require('@tailwindcss/line-clamp')],
   daisyui: {
     themes: [
       {
         mytheme: {
-          'primary': 'rgb(23, 146, 112)',
+          primary: 'rgb(23, 146, 112)',
           'primary-content': '#ffffff',
           // 'secondary': '#f6d860',
-          'accent': '#37cdbe',
-          'neutral': '#3d4451',
+          accent: '#37cdbe',
+          neutral: '#3d4451',
           'base-100': '#ffffff',
         },
       },

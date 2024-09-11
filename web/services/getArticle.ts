@@ -6,7 +6,7 @@ export const getArticle = async ({
   id,
   token,
 }: {
-  id: number,
+  id: number;
   token: string | null;
 }): Promise<ArticleAttributes> => {
   const response = await request({

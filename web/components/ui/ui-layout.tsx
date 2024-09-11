@@ -7,7 +7,11 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AccountChecker } from '../account/account-ui';
-import { ClusterChecker, ClusterUiSelect, ExplorerLink } from '../cluster/cluster-ui';
+import {
+  ClusterChecker,
+  ClusterUiSelect,
+  ExplorerLink,
+} from '../cluster/cluster-ui';
 import toast, { Toaster } from 'react-hot-toast';
 import { TOKEN_STORAGE_KEY } from '@/constants';
 
@@ -46,7 +50,12 @@ export function UiLayout({
           <ul className="menu menu-horizontal px-1 space-x-4">
             {links.map(({ label, path }) => (
               <li key={path}>
-                <Link className={`btn btn-sm ${pathname.startsWith(path) ? 'btn-primary' : ''}`} href={path}>
+                <Link
+                  className={`btn btn-sm ${
+                    pathname.startsWith(path) ? 'btn-primary' : ''
+                  }`}
+                  href={path}
+                >
                   {label}
                 </Link>
               </li>

@@ -2,11 +2,16 @@ import { Article, ArticleCreationAttributes, User, Payment } from '../models';
 import { Op, Sequelize } from 'sequelize';
 import { NotFoundError } from '../shared/errors';
 
-export async function createArticle(articleData: ArticleCreationAttributes): Promise<Article> {
+export async function createArticle(
+  articleData: ArticleCreationAttributes
+): Promise<Article> {
   return Article.create(articleData);
 }
 
-export async function getArticleById(id: number, userId: number): Promise<Article> {
+export async function getArticleById(
+  id: number,
+  userId: number
+): Promise<Article> {
   const article = await Article.findByPk(id, {
     include: [
       {
@@ -41,7 +46,9 @@ export type GetArticlesParams = {
   searchQuery?: string | null;
 };
 
-export async function getArticles(params: GetArticlesParams = {}): Promise<Article[]> {
+export async function getArticles(
+  params: GetArticlesParams = {}
+): Promise<Article[]> {
   const { limit = 10, offset = 0, searchQuery = null } = params;
 
   const whereClause = searchQuery

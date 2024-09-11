@@ -3,7 +3,7 @@ import { User, UserCreationAttributes } from '../models/User';
 import { AlreadyExistsError, NotFoundError } from '../shared/errors';
 
 export async function createUser(
-  userAttributes: UserCreationAttributes,
+  userAttributes: UserCreationAttributes
 ): Promise<User> {
   try {
     return await User.create(userAttributes);
@@ -15,7 +15,9 @@ export async function createUser(
   }
 }
 
-export async function getUserByPublicKey(publicKey: string): Promise<User | null> {
+export async function getUserByPublicKey(
+  publicKey: string
+): Promise<User | null> {
   return User.findOne({
     where: { publicKey },
   });
@@ -23,7 +25,7 @@ export async function getUserByPublicKey(publicKey: string): Promise<User | null
 
 export async function updateUserByPublicKey(
   publicKey: string,
-  userAttributes: Partial<UserCreationAttributes>,
+  userAttributes: Partial<UserCreationAttributes>
 ): Promise<[number, User[]]> {
   return User.update(userAttributes, {
     where: { publicKey },

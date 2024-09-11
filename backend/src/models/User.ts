@@ -15,11 +15,7 @@ export type UserAttributes = {
 
 export type UserCreationAttributes = Optional<
   UserAttributes,
-  | 'id'
-  | 'username'
-  | 'nonce'
-  | 'createdAt'
-  | 'updatedAt'
+  'id' | 'username' | 'nonce' | 'createdAt' | 'updatedAt'
 >;
 
 export class User

@@ -50,11 +50,12 @@ export default function ArticleDetailFeature() {
       <div className="flex justify-between items-center mb-6">
         {/* Author's Public Key linked to Solana Explorer */}
         <div className="text-sm text-gray-500">
-          Author: <ExplorerLink
-              path={`address/${article.author!.publicKey}`}
-              label={article.author!.publicKey}
-              className="text-primary underline"
-            />
+          Author:{' '}
+          <ExplorerLink
+            path={`address/${article.author!.publicKey}`}
+            label={article.author!.publicKey}
+            className="text-primary underline"
+          />
         </div>
         <div className="text-sm text-gray-500">
           Published on: {format(new Date(article.createdAt), 'MMMM dd, yyyy')}

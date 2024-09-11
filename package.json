@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "build": "nx build web",
-    "dev": "nx serve web"
+    "dev": "nx serve web",
+    "prettier": "prettier . --write"
   },
   "private": true,
   "dependencies": {

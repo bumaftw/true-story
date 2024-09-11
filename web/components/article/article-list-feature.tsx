@@ -16,17 +16,16 @@ export default function ArticleFeature() {
   const { getToken } = useAuth();
 
   // Infinite query for loading more articles
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery(
-    {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
       queryKey: [ARTICLES_QUERY_KEY],
       queryFn: async ({ pageParam = 0 }) => {
         const token = await getToken();
-        return await getArticlesList({ token, limit: ARTICLES_PER_PAGE, offset: pageParam });
+        return await getArticlesList({
+          token,
+          limit: ARTICLES_PER_PAGE,
+          offset: pageParam,
+        });
       },
       initialPageParam: 0,
       getNextPageParam: (lastPage, allPages) => {
@@ -34,13 +33,13 @@ export default function ArticleFeature() {
         return allPages.flat().length;
       },
       enabled: connected,
-    }
-  );
+    });
 
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100 &&
+        window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 100 &&
         hasNextPage &&
         !isFetchingNextPage
       ) {
@@ -63,13 +62,18 @@ export default function ArticleFeature() {
             <IconNews size={40} className="text-primary mr-3" />
             <h1 className="text-4xl font-bold text-primary">Latest News</h1>
           </div>
-          <p className="text-gray-500">Stay updated with the latest articles and news</p>
+          <p className="text-gray-500">
+            Stay updated with the latest articles and news
+          </p>
         </div>
 
         {/* Article Cards (Single Column) */}
         <div className="space-y-6">
           {articles.map((article, index) => (
-            <div key={index} className="card bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300">
+            <div
+              key={index}
+              className="card bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
+            >
               <figure>
                 <img
                   src={article.imageUrl || '/default-image.jpg'}
@@ -78,12 +82,12 @@ export default function ArticleFeature() {
                 />
               </figure>
               <div className="card-body">
-                <h2 className="card-title text-2xl font-semibold">{article.title}</h2>
+                <h2 className="card-title text-2xl font-semibold">
+                  {article.title}
+                </h2>
 
                 {/* Content preview limited to a few lines */}
-                <p className="text-gray-700 line-clamp-3">
-                  {article.content}
-                </p>
+                <p className="text-gray-700 line-clamp-3">{article.content}</p>
 
                 <div className="card-actions justify-end mt-4">
                   {/* Read More Button to Navigate to Article Details */}

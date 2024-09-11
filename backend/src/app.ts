@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(
   morgan('dev', {
     stream: { write: (message) => logger.info(message.trim()) },
-  }),
+  })
 );
 app.use(corsMiddleware);
 

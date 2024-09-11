@@ -4,7 +4,7 @@ import * as articleService from '../services/articleService';
 
 export async function getArticles(
   req: Request,
-  res: Response<ArticleAttributes[]>,
+  res: Response<ArticleAttributes[]>
 ): Promise<Response> {
   const offset = Number(req.query.offset) || 0;
   const limit = Number(req.query.limit) || 10;
@@ -21,9 +21,12 @@ export async function getArticles(
 
 export async function getArticleById(
   req: Request,
-  res: Response<ArticleAttributes>,
+  res: Response<ArticleAttributes>
 ): Promise<Response> {
-  const article = await articleService.getArticleById(parseInt(req.params.id), req.user!.id);
+  const article = await articleService.getArticleById(
+    parseInt(req.params.id),
+    req.user!.id
+  );
 
   return res.json(article);
 }
