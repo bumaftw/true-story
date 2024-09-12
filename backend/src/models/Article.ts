@@ -9,6 +9,7 @@ export type ArticleAttributes = {
   content: string;
   imageUrl?: string | null;
   authorId?: number | null;
+  price: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -27,6 +28,7 @@ export class Article
   declare content: string;
   declare imageUrl: string | null;
   declare authorId: number | null;
+  declare price: number;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
   declare author?: NonAttribute<User>;
@@ -62,6 +64,11 @@ Article.init(
       },
       onDelete: 'SET NULL',
       field: 'author_id',
+    },
+    price: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
     },
     createdAt: {
       type: DataTypes.DATE,
