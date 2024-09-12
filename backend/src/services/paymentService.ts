@@ -20,9 +20,11 @@ export async function verifyPayment(
   const compiledInstructions = message.compiledInstructions;
 
   const tokenTransferInstruction = compiledInstructions.find(
-    (ix) => ix.programIdIndex === message.staticAccountKeys.findIndex(
-      (key) => key.toString() === TOKEN_PROGRAM_ID.toString()
-    )
+    (ix) =>
+      ix.programIdIndex ===
+      message.staticAccountKeys.findIndex(
+        (key) => key.toString() === TOKEN_PROGRAM_ID.toString()
+      )
   );
 
   if (!tokenTransferInstruction) {
@@ -52,7 +54,8 @@ export async function verifyPayment(
     throw new ValidationError('Invalid payment recipient');
   }
 
-  const transferAmount = transaction.meta?.postTokenBalances?.[0]?.uiTokenAmount?.uiAmount;
+  const transferAmount =
+    transaction.meta?.postTokenBalances?.[0]?.uiTokenAmount?.uiAmount;
   if (!transferAmount || transferAmount < article.price) {
     throw new ValidationError('Insufficient payment amount');
   }
