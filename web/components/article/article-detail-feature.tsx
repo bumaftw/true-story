@@ -1,23 +1,29 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { getArticle } from '@/services/getArticle';
+import { verifyPayment } from '@/services/verifyPayment';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { ExplorerLink } from '../cluster/cluster-ui';
+import { PublicKey } from '@solana/web3.js';
+import { useState } from 'react';
+import { useTransferSol } from '../account/account-data-access';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
 
 export default function ArticleDetailFeature() {
   const { id } = useParams();
-  const { connected } = useWallet();
+  const { connected, publicKey } = useWallet();
+  const transferSolMutation = useTransferSol({ address: publicKey! });
   const { getToken } = useAuth();
+  const [loading, setLoading] = useState(false); // Loading state for managing transaction status
 
   const articleId = Array.isArray(id) ? id[0] : id;
 
-  const { data: article } = useQuery({
+  const { data: article, refetch } = useQuery({
     queryKey: [ARTICLE_QUERY_KEY, articleId],
     queryFn: async () => {
       const token = await getToken();
@@ -25,6 +31,36 @@ export default function ArticleDetailFeature() {
     },
     enabled: connected && !!articleId,
   });
+
+  const mutation = useMutation({
+    mutationFn: async ({ articleId, signature }: { articleId: number; signature: string }) => {
+      const token = await getToken();
+      return await verifyPayment({ articleId, signature, token });
+    },
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const handlePayment = async () => {
+    try {
+      if (!article) {
+        throw new Error('No article loaded');
+      }
+      setLoading(true);
+
+      const signature = await transferSolMutation.mutateAsync({
+        destination: new PublicKey(article.author!.publicKey),
+        amount: article.price,
+      });
+
+      await mutation.mutateAsync({ articleId: article!.id, signature });
+      setLoading(false);
+    } catch (error) {
+      console.error('Payment failed:', error);
+      setLoading(false);
+    }
+  };
 
   if (!article) {
     return <div className="text-center py-20">Loading article...</div>;
@@ -48,7 +84,6 @@ export default function ArticleDetailFeature() {
 
       {/* Author and Created Date */}
       <div className="flex justify-between items-center mb-6">
-        {/* Author's Public Key linked to Solana Explorer */}
         <div className="text-sm text-gray-500">
           Author:{' '}
           <ExplorerLink
@@ -66,6 +101,22 @@ export default function ArticleDetailFeature() {
       <div className="prose prose-lg max-w-none">
         <p>{article.content}</p>
       </div>
+
+      {/* Show pay button if user hasn't paid */}
+      {!article.payments?.length && (
+        <div className="mt-6">
+          {loading ? (
+            <button className="btn btn-primary btn-outline" disabled>
+              <div className='loading'></div>
+              Processing Payment...
+            </button>
+          ) : (
+            <button className="btn btn-primary" onClick={handlePayment}>
+              Pay {article.price} to read full article
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Updated Date */}
       {article.updatedAt && (

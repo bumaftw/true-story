@@ -67,31 +67,23 @@ export function useTransferSol({ address }: { address: PublicKey }) {
       { endpoint: connection.rpcEndpoint, address },
     ],
     mutationFn: async (input: { destination: PublicKey; amount: number }) => {
-      let signature: TransactionSignature = '';
-      try {
-        const { transaction, latestBlockhash } = await createTransaction({
-          publicKey: address,
-          destination: input.destination,
-          amount: input.amount,
-          connection,
-        });
+      const { transaction, latestBlockhash } = await createTransaction({
+        publicKey: address,
+        destination: input.destination,
+        amount: input.amount,
+        connection,
+      });
 
-        // Send transaction and await for signature
-        signature = await wallet.sendTransaction(transaction, connection);
+      // Send transaction and await for signature
+      const signature: TransactionSignature = await wallet.sendTransaction(transaction, connection);
 
-        // Send transaction and await for signature
-        await connection.confirmTransaction(
-          { signature, ...latestBlockhash },
-          'confirmed'
-        );
+      // Send transaction and await for signature
+      await connection.confirmTransaction(
+        { signature, ...latestBlockhash },
+        'confirmed'
+      );
 
-        console.log(signature);
-        return signature;
-      } catch (error: unknown) {
-        console.log('error', `Transaction failed! ${error}`, signature);
-
-        return;
-      }
+      return signature;
     },
     onSuccess: (signature) => {
       if (signature) {

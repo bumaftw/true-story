@@ -13,7 +13,7 @@ export async function verifyPayment(
   const { articleId, signature } = req.body;
   const userId = req.user!.id;
 
-  const payment = await paymentService.verifyPayment(
+  const payment = await paymentService.verifySolPayment(
     Number(articleId),
     userId,
     signature
