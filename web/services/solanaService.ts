@@ -16,12 +16,15 @@ import {
 } from '@solana/spl-token';
 
 type PaymentTransactionParams = {
-  recipient: PublicKey,
-  sender: PublicKey | null,
-  amount: number,
-  connection: Connection,
-  sendTransaction: (transaction: Transaction, connection: Connection) => Promise<TransactionSignature>
-}
+  recipient: PublicKey;
+  sender: PublicKey | null;
+  amount: number;
+  connection: Connection;
+  sendTransaction: (
+    transaction: Transaction,
+    connection: Connection
+  ) => Promise<TransactionSignature>;
+};
 
 export async function initiateUSDTPayment({
   recipient,
@@ -34,18 +37,25 @@ export async function initiateUSDTPayment({
     throw new WalletNotConnectedError();
   }
 
-  const usdtMintAddress = new PublicKey('Es9vMFrzaC7eZThALzXz5u2XBYRgfNDspTGgP57mz2B'); // USDT mint address
+  const usdtMintAddress = new PublicKey(
+    'Es9vMFrzaC7eZThALzXz5u2XBYRgfNDspTGgP57mz2B'
+  ); // USDT mint address
 
   const recipientTokenAddress = await getAssociatedTokenAddress(
     usdtMintAddress,
     recipient
   );
 
-  const senderTokenAddress = await getAssociatedTokenAddress(usdtMintAddress, sender);
+  const senderTokenAddress = await getAssociatedTokenAddress(
+    usdtMintAddress,
+    sender
+  );
 
   const transaction = new Transaction();
 
-  const recipientTokenAccountInfo = await connection.getAccountInfo(recipientTokenAddress);
+  const recipientTokenAccountInfo = await connection.getAccountInfo(
+    recipientTokenAddress
+  );
   if (!recipientTokenAccountInfo) {
     transaction.add(
       createAssociatedTokenAccountInstruction(
@@ -54,12 +64,14 @@ export async function initiateUSDTPayment({
         recipient,
         usdtMintAddress,
         TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
       )
     );
   }
 
-  const senderTokenAccountInfo = await connection.getAccountInfo(senderTokenAddress);
+  const senderTokenAccountInfo = await connection.getAccountInfo(
+    senderTokenAddress
+  );
   if (!senderTokenAccountInfo) {
     transaction.add(
       createAssociatedTokenAccountInstruction(
@@ -68,7 +80,7 @@ export async function initiateUSDTPayment({
         sender,
         usdtMintAddress,
         TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
       )
     );
   }
@@ -80,7 +92,7 @@ export async function initiateUSDTPayment({
       sender,
       amount * 1e6, // Amount in smallest denomination (USDT uses 6 decimal places)
       [],
-      TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID
     )
   );
 
@@ -112,7 +124,10 @@ export async function initiateSolPayment({
 
   const signature = await sendTransaction(transaction, connection);
 
-  const confirmation = await connection.confirmTransaction(signature, 'finalized');
+  const confirmation = await connection.confirmTransaction(
+    signature,
+    'finalized'
+  );
   console.log(confirmation);
 
   return signature;

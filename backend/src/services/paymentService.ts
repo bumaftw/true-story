@@ -1,10 +1,5 @@
-import {
-  getAssociatedTokenAddress,
-} from '@solana/spl-token';
-import {
-  PublicKey,
-  LAMPORTS_PER_SOL
-} from '@solana/web3.js';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
+import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Payment, Article, User } from '../models';
 import connection from './solana';
 import { ValidationError, NotFoundError } from '../shared/errors';
@@ -16,7 +11,7 @@ const TOKEN_DECIMALS = parseInt(config.get('TOKEN_MINT_ADDRESS'));
 export async function verifyTokenPayment(
   articleId: number,
   userId: number,
-  signature: string,
+  signature: string
 ): Promise<Payment> {
   const transaction = await connection.getTransaction(signature, {
     commitment: 'confirmed',
@@ -84,7 +79,8 @@ export async function verifyTokenPayment(
     ? parseFloat(postTokenBalanceEntry.uiTokenAmount.amount)
     : 0;
 
-  const balanceDifference = (postBalance - preBalance) / Math.pow(10, TOKEN_DECIMALS);
+  const balanceDifference =
+    (postBalance - preBalance) / Math.pow(10, TOKEN_DECIMALS);
 
   if (balanceDifference < article.price) {
     throw new ValidationError('Insufficient payment amount');
@@ -105,7 +101,9 @@ export async function verifySolPayment(
   userId: number,
   signature: string
 ): Promise<Payment> {
-  const transaction = await connection.getTransaction(signature, { commitment: 'confirmed' });
+  const transaction = await connection.getTransaction(signature, {
+    commitment: 'confirmed',
+  });
 
   if (!transaction || !transaction.meta || !transaction.transaction.message) {
     throw new NotFoundError('Transaction not found');
@@ -142,7 +140,9 @@ export async function verifySolPayment(
     throw new ValidationError('Invalid payment recipient');
   }
 
-  const transferredAmount = (postBalances[recipientIndex] - preBalances[recipientIndex]) / LAMPORTS_PER_SOL;
+  const transferredAmount =
+    (postBalances[recipientIndex] - preBalances[recipientIndex]) /
+    LAMPORTS_PER_SOL;
 
   if (transferredAmount < article.price) {
     throw new ValidationError('Insufficient payment amount');

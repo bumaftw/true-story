@@ -33,7 +33,13 @@ export default function ArticleDetailFeature() {
   });
 
   const mutation = useMutation({
-    mutationFn: async ({ articleId, signature }: { articleId: number; signature: string }) => {
+    mutationFn: async ({
+      articleId,
+      signature,
+    }: {
+      articleId: number;
+      signature: string;
+    }) => {
       const token = await getToken();
       return await verifyPayment({ articleId, signature, token });
     },
@@ -107,7 +113,7 @@ export default function ArticleDetailFeature() {
         <div className="mt-6">
           {loading ? (
             <button className="btn btn-primary btn-outline" disabled>
-              <div className='loading'></div>
+              <div className="loading"></div>
               Processing Payment...
             </button>
           ) : (

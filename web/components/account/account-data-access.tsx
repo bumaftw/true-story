@@ -22,7 +22,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useTransactionToast } from '../ui/ui-layout';
 
-const TOKEN_MINT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS!);
+const TOKEN_MINT_ADDRESS = new PublicKey(
+  process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS!
+);
 const TOKEN_DECIMALS = parseInt(process.env.NEXT_PUBLIC_TOKEN_DECIMALS!);
 
 export function useGetBalance({ address }: { address: PublicKey }) {
@@ -84,10 +86,11 @@ export function useTransferSol({ address }: { address: PublicKey }) {
         connection,
       });
 
-      // Send transaction and await for signature
-      const signature: TransactionSignature = await wallet.sendTransaction(transaction, connection);
+      const signature: TransactionSignature = await wallet.sendTransaction(
+        transaction,
+        connection
+      );
 
-      // Send transaction and await for signature
       await connection.confirmTransaction(
         { signature, ...latestBlockhash },
         'confirmed'
@@ -173,10 +176,8 @@ async function createTransaction({
   transaction: VersionedTransaction;
   latestBlockhash: { blockhash: string; lastValidBlockHeight: number };
 }> {
-  // Get the latest blockhash to use in our transaction
   const latestBlockhash = await connection.getLatestBlockhash();
 
-  // Create instructions to send, in this case a simple transfer
   const instructions = [
     SystemProgram.transfer({
       fromPubkey: publicKey,
@@ -185,14 +186,12 @@ async function createTransaction({
     }),
   ];
 
-  // Create a new TransactionMessage with version and compile it to legacy
   const messageLegacy = new TransactionMessage({
     payerKey: publicKey,
     recentBlockhash: latestBlockhash.blockhash,
     instructions,
   }).compileToLegacyMessage();
 
-  // Create a new VersionedTransaction which supports legacy and v0
   const transaction = new VersionedTransaction(messageLegacy);
 
   return {
@@ -213,12 +212,13 @@ export function useTransferToken({ address }: { address: PublicKey }) {
       { endpoint: connection.rpcEndpoint, address },
     ],
     mutationFn: async (input: { destination: PublicKey; amount: number }) => {
-      const { transaction, latestBlockhash } = await createTokenTransferTransaction({
-        publicKey: address,
-        destination: input.destination,
-        amount: input.amount,
-        connection,
-      });
+      const { transaction, latestBlockhash } =
+        await createTokenTransferTransaction({
+          publicKey: address,
+          destination: input.destination,
+          amount: input.amount,
+          connection,
+        });
 
       const signature: TransactionSignature = await wallet.sendTransaction(
         transaction,
