@@ -10,16 +10,16 @@ import { format } from 'date-fns';
 import { ExplorerLink } from '../cluster/cluster-ui';
 import { PublicKey } from '@solana/web3.js';
 import { useState } from 'react';
-import { useTransferSol } from '../account/account-data-access';
+import { useTransferToken } from '../account/account-data-access';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
 
 export default function ArticleDetailFeature() {
   const { id } = useParams();
   const { connected, publicKey } = useWallet();
-  const transferSolMutation = useTransferSol({ address: publicKey! });
+  const transferTokenMutation = useTransferToken({ address: publicKey! });
   const { getToken } = useAuth();
-  const [loading, setLoading] = useState(false); // Loading state for managing transaction status
+  const [loading, setLoading] = useState(false);
 
   const articleId = Array.isArray(id) ? id[0] : id;
 
@@ -49,7 +49,7 @@ export default function ArticleDetailFeature() {
       }
       setLoading(true);
 
-      const signature = await transferSolMutation.mutateAsync({
+      const signature = await transferTokenMutation.mutateAsync({
         destination: new PublicKey(article.author!.publicKey),
         amount: article.price,
       });

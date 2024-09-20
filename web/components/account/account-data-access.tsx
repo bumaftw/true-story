@@ -1,12 +1,19 @@
 'use client';
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import {
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+  createTransferInstruction,
+  TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
+} from '@solana/spl-token';
 import {
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
   SystemProgram,
+  Transaction,
   TransactionMessage,
   TransactionSignature,
   VersionedTransaction,
@@ -14,6 +21,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useTransactionToast } from '../ui/ui-layout';
+
+const TOKEN_MINT_ADDRESS = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS!);
+const TOKEN_DECIMALS = parseInt(process.env.NEXT_PUBLIC_TOKEN_DECIMALS!);
 
 export function useGetBalance({ address }: { address: PublicKey }) {
   const { connection } = useConnection();
@@ -184,6 +194,126 @@ async function createTransaction({
 
   // Create a new VersionedTransaction which supports legacy and v0
   const transaction = new VersionedTransaction(messageLegacy);
+
+  return {
+    transaction,
+    latestBlockhash,
+  };
+}
+
+export function useTransferToken({ address }: { address: PublicKey }) {
+  const { connection } = useConnection();
+  const transactionToast = useTransactionToast();
+  const wallet = useWallet();
+  const client = useQueryClient();
+
+  return useMutation({
+    mutationKey: [
+      'transfer-token',
+      { endpoint: connection.rpcEndpoint, address },
+    ],
+    mutationFn: async (input: { destination: PublicKey; amount: number }) => {
+      const { transaction, latestBlockhash } = await createTokenTransferTransaction({
+        publicKey: address,
+        destination: input.destination,
+        amount: input.amount,
+        connection,
+      });
+
+      const signature: TransactionSignature = await wallet.sendTransaction(
+        transaction,
+        connection
+      );
+
+      await connection.confirmTransaction(
+        { signature, ...latestBlockhash },
+        'confirmed'
+      );
+
+      return signature;
+    },
+    onSuccess: (signature) => {
+      if (signature) {
+        transactionToast(signature);
+      }
+      return Promise.all([
+        client.invalidateQueries({
+          queryKey: [
+            'get-token-accounts',
+            { endpoint: connection.rpcEndpoint, address },
+          ],
+        }),
+        client.invalidateQueries({
+          queryKey: [
+            'get-signatures',
+            { endpoint: connection.rpcEndpoint, address },
+          ],
+        }),
+      ]);
+    },
+    onError: (error) => {
+      toast.error(`Transaction failed! ${error}`);
+    },
+  });
+}
+
+async function createTokenTransferTransaction({
+  publicKey,
+  destination,
+  amount,
+  connection,
+}: {
+  publicKey: PublicKey;
+  destination: PublicKey;
+  amount: number;
+  connection: Connection;
+}): Promise<{
+  transaction: Transaction;
+  latestBlockhash: { blockhash: string; lastValidBlockHeight: number };
+}> {
+  const senderTokenAccountAddress = await getAssociatedTokenAddress(
+    TOKEN_MINT_ADDRESS,
+    publicKey
+  );
+
+  const recipientTokenAccountAddress = await getAssociatedTokenAddress(
+    TOKEN_MINT_ADDRESS,
+    destination
+  );
+
+  const recipientAccountInfo = await connection.getAccountInfo(
+    recipientTokenAccountAddress
+  );
+
+  const instructions = [];
+
+  if (!recipientAccountInfo) {
+    const createATAInstruction = createAssociatedTokenAccountInstruction(
+      publicKey,
+      recipientTokenAccountAddress,
+      destination,
+      TOKEN_MINT_ADDRESS
+    );
+    instructions.push(createATAInstruction);
+  }
+
+  const amountInTokens = amount * Math.pow(10, TOKEN_DECIMALS);
+
+  const transferInstruction = createTransferInstruction(
+    senderTokenAccountAddress,
+    recipientTokenAccountAddress,
+    publicKey,
+    amountInTokens,
+    [],
+    TOKEN_PROGRAM_ID
+  );
+
+  instructions.push(transferInstruction);
+
+  const latestBlockhash = await connection.getLatestBlockhash();
+  const transaction = new Transaction().add(...instructions);
+  transaction.recentBlockhash = latestBlockhash.blockhash;
+  transaction.feePayer = publicKey;
 
   return {
     transaction,
