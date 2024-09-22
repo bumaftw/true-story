@@ -1,10 +1,11 @@
 'use client';
 
+import { BN, Program } from '@coral-xyz/anchor';
+import { getFundSplitProgram, FundSplit } from '@true-story/anchor';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
   getAssociatedTokenAddress,
   createAssociatedTokenAccountInstruction,
-  createTransferInstruction,
   TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
 } from '@solana/spl-token';
@@ -21,11 +22,13 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { useTransactionToast } from '../ui/ui-layout';
+import { useAnchorProvider } from '../solana/solana-provider';
 
 const TOKEN_MINT_ADDRESS = new PublicKey(
   process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS!
 );
 const TOKEN_DECIMALS = parseInt(process.env.NEXT_PUBLIC_TOKEN_DECIMALS!);
+const PLATFORM_PUBLIC_KEY = new PublicKey(process.env.NEXT_PUBLIC_PLATFORM_PUBLIC_KEY!);
 
 export function useGetBalance({ address }: { address: PublicKey }) {
   const { connection } = useConnection();
@@ -203,8 +206,9 @@ async function createTransaction({
 export function useTransferToken({ address }: { address: PublicKey }) {
   const { connection } = useConnection();
   const transactionToast = useTransactionToast();
-  const wallet = useWallet();
   const client = useQueryClient();
+  const provider = useAnchorProvider();
+  const program = getFundSplitProgram(provider);
 
   return useMutation({
     mutationKey: [
@@ -212,22 +216,16 @@ export function useTransferToken({ address }: { address: PublicKey }) {
       { endpoint: connection.rpcEndpoint, address },
     ],
     mutationFn: async (input: { destination: PublicKey; amount: number }) => {
-      const { transaction, latestBlockhash } =
-        await createTokenTransferTransaction({
-          publicKey: address,
-          destination: input.destination,
-          amount: input.amount,
-          connection,
-        });
+      const { transaction } = await createTokenTransferTransaction({
+        publicKey: address,
+        destination: input.destination,
+        amount: input.amount,
+        connection,
+        program,
+      });
 
-      const signature: TransactionSignature = await wallet.sendTransaction(
-        transaction,
-        connection
-      );
-
-      await connection.confirmTransaction(
-        { signature, ...latestBlockhash },
-        'confirmed'
+      const signature: TransactionSignature = await provider.sendAndConfirm(
+        transaction
       );
 
       return signature;
@@ -262,61 +260,70 @@ async function createTokenTransferTransaction({
   destination,
   amount,
   connection,
+  program,
 }: {
   publicKey: PublicKey;
   destination: PublicKey;
   amount: number;
   connection: Connection;
+  program: Program<FundSplit>;
 }): Promise<{
   transaction: Transaction;
-  latestBlockhash: { blockhash: string; lastValidBlockHeight: number };
 }> {
-  const senderTokenAccountAddress = await getAssociatedTokenAddress(
+  const payerTokenAccount = await getAssociatedTokenAddress(
     TOKEN_MINT_ADDRESS,
     publicKey
   );
 
-  const recipientTokenAccountAddress = await getAssociatedTokenAddress(
+  const authorTokenAccount = await getAssociatedTokenAddress(
     TOKEN_MINT_ADDRESS,
     destination
   );
 
-  const recipientAccountInfo = await connection.getAccountInfo(
-    recipientTokenAccountAddress
+  const platformTokenAccount = await getAssociatedTokenAddress(
+    TOKEN_MINT_ADDRESS,
+    PLATFORM_PUBLIC_KEY
   );
 
   const instructions = [];
 
-  if (!recipientAccountInfo) {
-    const createATAInstruction = createAssociatedTokenAccountInstruction(
+  const authorAccountInfo = await connection.getAccountInfo(authorTokenAccount);
+  if (!authorAccountInfo) {
+    const createAuthorATA = createAssociatedTokenAccountInstruction(
       publicKey,
-      recipientTokenAccountAddress,
+      authorTokenAccount,
       destination,
       TOKEN_MINT_ADDRESS
     );
-    instructions.push(createATAInstruction);
+    instructions.push(createAuthorATA);
+  }
+
+  const platformAccountInfo = await connection.getAccountInfo(platformTokenAccount);
+  if (!platformAccountInfo) {
+    const createPlatformATA = createAssociatedTokenAccountInstruction(
+      publicKey,
+      platformTokenAccount,
+      PLATFORM_PUBLIC_KEY,
+      TOKEN_MINT_ADDRESS
+    );
+    instructions.push(createPlatformATA);
   }
 
   const amountInTokens = amount * Math.pow(10, TOKEN_DECIMALS);
 
-  const transferInstruction = createTransferInstruction(
-    senderTokenAccountAddress,
-    recipientTokenAccountAddress,
-    publicKey,
-    amountInTokens,
-    [],
-    TOKEN_PROGRAM_ID
-  );
+  const splitFundsInstruction = await program.methods
+    .splitFunds(new BN(amountInTokens))
+    .accounts({
+      payer: publicKey,
+      payerTokenAccount,
+      authorTokenAccount,
+      platformTokenAccount,
+    })
+    .instruction();
 
-  instructions.push(transferInstruction);
+  instructions.push(splitFundsInstruction);
 
-  const latestBlockhash = await connection.getLatestBlockhash();
   const transaction = new Transaction().add(...instructions);
-  transaction.recentBlockhash = latestBlockhash.blockhash;
-  transaction.feePayer = publicKey;
 
-  return {
-    transaction,
-    latestBlockhash,
-  };
+  return { transaction };
 }
