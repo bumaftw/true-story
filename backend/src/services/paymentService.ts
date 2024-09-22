@@ -6,7 +6,8 @@ import { ValidationError, NotFoundError } from '../shared/errors';
 import config from '../shared/config';
 
 const TOKEN_MINT_ADDRESS = config.get('TOKEN_MINT_ADDRESS');
-const TOKEN_DECIMALS = parseInt(config.get('TOKEN_MINT_ADDRESS'));
+const TOKEN_DECIMALS = parseInt(config.get('TOKEN_DECIMALS'));
+const PLATFORM_PUBLIC_KEY = config.get('PLATFORM_PUBLIC_KEY');
 
 export async function verifyTokenPayment(
   articleId: number,
@@ -40,56 +41,141 @@ export async function verifyTokenPayment(
     throw new NotFoundError('Article not found');
   }
 
+  const user = await User.findByPk(userId, {
+    attributes: ['id', 'publicKey'],
+  });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
   const mintPublicKey = new PublicKey(TOKEN_MINT_ADDRESS);
-  const authorPublicKey = new PublicKey(article.author!.publicKey);
+  const userPublicKey = new PublicKey(user.publicKey);
 
-  const authorTokenAccountAddress = await getAssociatedTokenAddress(
+  const payerTokenAccountAddress = await getAssociatedTokenAddress(
     mintPublicKey,
-    authorPublicKey
+    userPublicKey
   );
 
-  const recipientIndex = accountKeys.findIndex(
-    (key) => key.toString() === authorTokenAccountAddress.toString()
+  const payerIndex = accountKeys.findIndex(
+    (key) => key.toString() === payerTokenAccountAddress.toString()
   );
 
-  if (recipientIndex === -1) {
-    throw new ValidationError('Invalid payment recipient');
+  if (payerIndex === -1) {
+    throw new ValidationError('Invalid payer token account');
   }
 
   const preTokenBalances = transaction.meta.preTokenBalances || [];
   const postTokenBalances = transaction.meta.postTokenBalances || [];
 
-  const preTokenBalanceEntry = preTokenBalances.find(
+  const prePayerBalanceEntry = preTokenBalances.find(
     (balance) =>
-      balance.accountIndex === recipientIndex &&
-      balance.mint === TOKEN_MINT_ADDRESS
+      balance.accountIndex === payerIndex && balance.mint === TOKEN_MINT_ADDRESS
   );
 
-  const postTokenBalanceEntry = postTokenBalances.find(
+  const postPayerBalanceEntry = postTokenBalances.find(
     (balance) =>
-      balance.accountIndex === recipientIndex &&
-      balance.mint === TOKEN_MINT_ADDRESS
+      balance.accountIndex === payerIndex && balance.mint === TOKEN_MINT_ADDRESS
   );
 
-  const preBalance = preTokenBalanceEntry
-    ? parseFloat(preTokenBalanceEntry.uiTokenAmount.amount)
+  const prePayerBalance = prePayerBalanceEntry
+    ? parseFloat(prePayerBalanceEntry.uiTokenAmount.amount)
     : 0;
 
-  const postBalance = postTokenBalanceEntry
-    ? parseFloat(postTokenBalanceEntry.uiTokenAmount.amount)
+  const postPayerBalance = postPayerBalanceEntry
+    ? parseFloat(postPayerBalanceEntry.uiTokenAmount.amount)
     : 0;
 
-  const balanceDifference =
-    (postBalance - preBalance) / Math.pow(10, TOKEN_DECIMALS);
+  const payerBalanceDifference =
+    (prePayerBalance - postPayerBalance) / Math.pow(10, TOKEN_DECIMALS);
 
-  if (balanceDifference < article.price) {
+  if (payerBalanceDifference < article.price) {
     throw new ValidationError('Insufficient payment amount');
+  }
+
+  const expectedAuthorAmount = payerBalanceDifference * 0.9;
+  const expectedPlatformAmount = payerBalanceDifference * 0.1;
+
+  const authorPublicKey = new PublicKey(article.author!.publicKey);
+  const authorTokenAccountAddress = await getAssociatedTokenAddress(
+    mintPublicKey,
+    authorPublicKey
+  );
+
+  const authorIndex = accountKeys.findIndex(
+    (key) => key.toString() === authorTokenAccountAddress.toString()
+  );
+
+  const preAuthorBalanceEntry = preTokenBalances.find(
+    (balance) =>
+      balance.accountIndex === authorIndex &&
+      balance.mint === TOKEN_MINT_ADDRESS
+  );
+
+  const postAuthorBalanceEntry = postTokenBalances.find(
+    (balance) =>
+      balance.accountIndex === authorIndex &&
+      balance.mint === TOKEN_MINT_ADDRESS
+  );
+
+  const preAuthorBalance = preAuthorBalanceEntry
+    ? parseFloat(preAuthorBalanceEntry.uiTokenAmount.amount)
+    : 0;
+
+  const postAuthorBalance = postAuthorBalanceEntry
+    ? parseFloat(postAuthorBalanceEntry.uiTokenAmount.amount)
+    : 0;
+
+  const authorBalanceDifference =
+    (postAuthorBalance - preAuthorBalance) / Math.pow(10, TOKEN_DECIMALS);
+
+  if (authorBalanceDifference < expectedAuthorAmount * 0.99) {
+    // Allowing a small margin for rounding errors
+    throw new ValidationError('Author did not receive correct amount');
+  }
+
+  const platformPublicKey = new PublicKey(PLATFORM_PUBLIC_KEY);
+  const platformTokenAccountAddress = await getAssociatedTokenAddress(
+    mintPublicKey,
+    platformPublicKey
+  );
+
+  const platformIndex = accountKeys.findIndex(
+    (key) => key.toString() === platformTokenAccountAddress.toString()
+  );
+
+  const prePlatformBalanceEntry = preTokenBalances.find(
+    (balance) =>
+      balance.accountIndex === platformIndex &&
+      balance.mint === TOKEN_MINT_ADDRESS
+  );
+
+  const postPlatformBalanceEntry = postTokenBalances.find(
+    (balance) =>
+      balance.accountIndex === platformIndex &&
+      balance.mint === TOKEN_MINT_ADDRESS
+  );
+
+  const prePlatformBalance = prePlatformBalanceEntry
+    ? parseFloat(prePlatformBalanceEntry.uiTokenAmount.amount)
+    : 0;
+
+  const postPlatformBalance = postPlatformBalanceEntry
+    ? parseFloat(postPlatformBalanceEntry.uiTokenAmount.amount)
+    : 0;
+
+  const platformBalanceDifference =
+    (postPlatformBalance - prePlatformBalance) / Math.pow(10, TOKEN_DECIMALS);
+
+  if (platformBalanceDifference < expectedPlatformAmount * 0.99) {
+    // Allowing a small margin for rounding errors
+    throw new ValidationError('Platform did not receive correct amount');
   }
 
   const payment = await Payment.create({
     userId,
     articleId,
-    amount: balanceDifference,
+    amount: payerBalanceDifference,
     transactionId: signature,
   });
 
