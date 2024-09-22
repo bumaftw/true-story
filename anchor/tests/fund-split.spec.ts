@@ -18,7 +18,10 @@ describe('fund-split', () => {
 
   beforeAll(async () => {
     await provider.connection.confirmTransaction(
-      await provider.connection.requestAirdrop(payer.publicKey, 2 * LAMPORTS_PER_SOL),
+      await provider.connection.requestAirdrop(
+        payer.publicKey,
+        2 * LAMPORTS_PER_SOL
+      ),
       'confirmed'
     );
 
@@ -75,9 +78,15 @@ describe('fund-split', () => {
       .signers([])
       .rpc();
 
-    const payerBalance = (await provider.connection.getTokenAccountBalance(payerTokenAccount)).value.amount;
-    const authorBalance = (await provider.connection.getTokenAccountBalance(authorTokenAccount)).value.amount;
-    const platformBalance = (await provider.connection.getTokenAccountBalance(platformTokenAccount)).value.amount;
+    const payerBalance = (
+      await provider.connection.getTokenAccountBalance(payerTokenAccount)
+    ).value.amount;
+    const authorBalance = (
+      await provider.connection.getTokenAccountBalance(authorTokenAccount)
+    ).value.amount;
+    const platformBalance = (
+      await provider.connection.getTokenAccountBalance(platformTokenAccount)
+    ).value.amount;
 
     const expectedAuthorBalance = (100 * 0.9 * 10 ** 6).toString(); // 90 tokens
     const expectedPlatformBalance = (100 * 0.1 * 10 ** 6).toString(); // 10 tokens

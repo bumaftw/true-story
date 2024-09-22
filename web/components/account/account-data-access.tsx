@@ -28,7 +28,9 @@ const TOKEN_MINT_ADDRESS = new PublicKey(
   process.env.NEXT_PUBLIC_TOKEN_MINT_ADDRESS!
 );
 const TOKEN_DECIMALS = parseInt(process.env.NEXT_PUBLIC_TOKEN_DECIMALS!);
-const PLATFORM_PUBLIC_KEY = new PublicKey(process.env.NEXT_PUBLIC_PLATFORM_PUBLIC_KEY!);
+const PLATFORM_PUBLIC_KEY = new PublicKey(
+  process.env.NEXT_PUBLIC_PLATFORM_PUBLIC_KEY!
+);
 
 export function useGetBalance({ address }: { address: PublicKey }) {
   const { connection } = useConnection();
@@ -298,7 +300,9 @@ async function createTokenTransferTransaction({
     instructions.push(createAuthorATA);
   }
 
-  const platformAccountInfo = await connection.getAccountInfo(platformTokenAccount);
+  const platformAccountInfo = await connection.getAccountInfo(
+    platformTokenAccount
+  );
   if (!platformAccountInfo) {
     const createPlatformATA = createAssociatedTokenAccountInstruction(
       publicKey,

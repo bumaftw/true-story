@@ -9,16 +9,7 @@
   "instructions": [
     {
       "name": "split_funds",
-      "discriminator": [
-        149,
-        133,
-        248,
-        202,
-        222,
-        43,
-        60,
-        221
-      ],
+      "discriminator": [149, 133, 248, 202, 222, 43, 60, 221],
       "accounts": [
         {
           "name": "payer",
