@@ -86,7 +86,7 @@ export default function ArticleDetailFeature() {
       )}
 
       {/* Article Title */}
-      <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
+      <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
 
       {/* Author and Created Date */}
       <div className="flex justify-between items-center mb-6">

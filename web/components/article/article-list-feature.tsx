@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { IconNews } from '@tabler/icons-react';
 import { getArticlesList } from '@/services/getArticlesList';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -11,7 +10,7 @@ import Link from 'next/link';
 const ARTICLES_QUERY_KEY = 'articles_list_query_key';
 const ARTICLES_PER_PAGE = 5;
 
-export default function ArticleFeature() {
+export default function ArticleListFeature() {
   const { connected } = useWallet();
   const { getToken } = useAuth();
 
@@ -54,19 +53,8 @@ export default function ArticleFeature() {
   const articles = data?.pages.flat() || [];
 
   return (
-    <div className="pt-10 pb-6">
+    <div className="relative pt-6 pb-4">
       <div className="max-w-3xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center py-4">
-            <IconNews size={40} className="text-primary mr-3" />
-            <h1 className="text-4xl font-bold text-primary">Latest News</h1>
-          </div>
-          <p className="text-gray-500">
-            Stay updated with the latest articles and news
-          </p>
-        </div>
-
         {/* Article Cards (Single Column) */}
         <div className="space-y-6">
           {articles.map((article, index) => (
@@ -109,6 +97,13 @@ export default function ArticleFeature() {
           )}
         </div>
       </div>
+
+      {/* Floating Create Article Button */}
+      <Link href="/articles/create">
+        <button className="btn btn-primary fixed bottom-20 right-6 rounded-full shadow-lg">
+          Create Article
+        </button>
+      </Link>
     </div>
   );
 }

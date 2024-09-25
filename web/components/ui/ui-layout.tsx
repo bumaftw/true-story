@@ -170,16 +170,16 @@ export function AppHero({
   subtitle: ReactNode;
 }) {
   return (
-    <div className="hero py-20">
+    <div className="hero py-10">
       <div className="hero-content text-center">
         <div className="max-w-2xl">
           {typeof title === 'string' ? (
-            <h1 className="text-5xl font-bold text-primary">{title}</h1>
+            <h1 className="text-3xl font-bold text-primary">{title}</h1>
           ) : (
             title
           )}
           {typeof subtitle === 'string' ? (
-            <p className="py-6 text-lg text-gray-600">{subtitle}</p>
+            <p className="py-6 text-gray-600">{subtitle}</p>
           ) : (
             subtitle
           )}
