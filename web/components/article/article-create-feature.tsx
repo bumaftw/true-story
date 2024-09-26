@@ -14,11 +14,12 @@ export default function CreateArticleFeature() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [price, setPrice] = useState(0.2);
   const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = useMutation({
     mutationKey: ['create-article'],
-    mutationFn: async (input: { title: string; content: string; imageUrl?: string }) => {
+    mutationFn: async (input: { title: string; content: string; imageUrl?: string; price: number }) => {
       setLoading(true);
 
       const token = await getToken();
@@ -28,7 +29,8 @@ export default function CreateArticleFeature() {
           title: input.title,
           content: input.content,
           imageUrl: input.imageUrl,
-        }
+          price: input.price,
+        },
       });
 
       return response;
@@ -38,6 +40,7 @@ export default function CreateArticleFeature() {
       setTitle('');
       setContent('');
       setImageUrl('');
+      setPrice(0.2);
       setLoading(false);
     },
     onError: (error: Error) => {
@@ -49,7 +52,7 @@ export default function CreateArticleFeature() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (title && content) {
-      await mutateAsync({ title, content, imageUrl });
+      await mutateAsync({ title, content, imageUrl, price });
     } else {
       toast.error('Please fill out the required fields');
     }
@@ -112,10 +115,30 @@ export default function CreateArticleFeature() {
               />
             </div>
 
+            {/* Price Slider */}
+            <div className="form-control mb-3">
+              <label className="label">
+                <span className="label-text">Price (Tokens)</span>
+              </label>
+              <input
+                type="range"
+                min={0}
+                max={2}
+                value={price}
+                step={0.1}
+                className="range"
+                onChange={(e) => setPrice(Number(e.target.value))}
+              />
+              <div className="text-center text-gray-500 mt-2">
+                {price} Tokens
+              </div>
+            </div>
+
             {/* Button Section */}
             <div className="flex justify-between mt-4">
               {/* Back Button */}
               <button
+                type="button"
                 className="btn btn-outline btn-secondary input-bordered"
                 onClick={() => router.back()}
               >
