@@ -19,7 +19,12 @@ export default function CreateArticleFeature() {
 
   const { mutateAsync } = useMutation({
     mutationKey: ['create-article'],
-    mutationFn: async (input: { title: string; content: string; imageUrl?: string; price: number }) => {
+    mutationFn: async (input: {
+      title: string;
+      content: string;
+      imageUrl?: string;
+      price: number;
+    }) => {
       setLoading(true);
 
       const token = await getToken();
@@ -64,7 +69,9 @@ export default function CreateArticleFeature() {
         {/* Header Section */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center py-2">
-            <h1 className="text-3xl font-bold text-primary">Create an Article</h1>
+            <h1 className="text-3xl font-bold text-primary">
+              Create an Article
+            </h1>
           </div>
           <p className="text-gray-500">
             Share your latest insights and news with the world
