@@ -40,13 +40,9 @@ export default function CreateArticleFeature() {
 
       return response;
     },
-    onSuccess: () => {
+    onSuccess: (article) => {
       toast.success('Article created successfully!');
-      setTitle('');
-      setContent('');
-      setImageUrl('');
-      setPrice(0.2);
-      setLoading(false);
+      router.push(`/articles/${article.id}`);
     },
     onError: (error: Error) => {
       setLoading(false);
@@ -102,7 +98,7 @@ export default function CreateArticleFeature() {
               <textarea
                 placeholder="Write your article content here..."
                 className="textarea textarea-bordered w-full"
-                rows={8}
+                rows={9}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required

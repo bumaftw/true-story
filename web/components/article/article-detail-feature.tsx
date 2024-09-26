@@ -72,6 +72,8 @@ export default function ArticleDetailFeature() {
     return <div className="text-center py-20">Loading article...</div>;
   }
 
+  const isAuthor = article.author?.publicKey === publicKey?.toString();
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       {/* Article Image */}
@@ -108,8 +110,8 @@ export default function ArticleDetailFeature() {
         <p>{article.content}</p>
       </div>
 
-      {/* Show pay button if user hasn't paid */}
-      {!article.payments?.length && (
+      {/* Show pay button if user hasn't paid and user is not the author */}
+      {!article.payments?.length && !isAuthor && (
         <div className="mt-6">
           {loading ? (
             <button className="btn btn-primary btn-outline" disabled>

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ArticleAttributes } from '../models';
+import { ArticleAttributes, ArticleCreationAttributes } from '../models';
 import * as articleService from '../services/articleService';
 
 export async function getArticles(
@@ -27,6 +27,21 @@ export async function getArticleById(
     parseInt(req.params.id),
     req.user!.id
   );
+
+  return res.json(article);
+}
+
+export async function createArticle(
+  req: Request<object, ArticleAttributes, ArticleCreationAttributes>,
+  res: Response<ArticleAttributes>
+): Promise<Response> {
+  const article = await articleService.createArticle({
+    title: req.body.title,
+    content: req.body.content,
+    imageUrl: req.body.imageUrl,
+    authorId: req.user!.id,
+    price: req.body.price,
+  });
 
   return res.json(article);
 }
