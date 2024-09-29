@@ -74,8 +74,11 @@ export default function ArticleListFeature() {
                   {article.title}
                 </h2>
 
-                {/* Content preview limited to a few lines */}
-                <p className="text-gray-700 line-clamp-3">{article.content}</p>
+                {/* Content preview limited to 3 lines */}
+                <p
+                  className="text-gray-700 line-clamp-3"
+                  dangerouslySetInnerHTML={{ __html: article.content }}
+                ></p>
 
                 <div className="card-actions justify-end mt-4">
                   {/* Read More Button to Navigate to Article Details */}

@@ -107,7 +107,7 @@ export default function ArticleDetailFeature() {
 
       {/* Article Content */}
       <div className="prose prose-lg max-w-none">
-        <p>{article.content}</p>
+        <div dangerouslySetInnerHTML={{ __html: article.content }}></div>
       </div>
 
       {/* Show pay button if user hasn't paid and user is not the author */}

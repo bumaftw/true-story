@@ -6,6 +6,11 @@ import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { createArticle } from '@/services/createArticle';
 import { toast } from 'react-hot-toast';
+import dynamic from 'next/dynamic';
+
+// Dynamically import ReactQuill to ensure it works in Next.js SSR
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+import 'react-quill/dist/quill.snow.css';
 
 export default function CreateArticleFeature() {
   const router = useRouter();
@@ -59,6 +64,22 @@ export default function CreateArticleFeature() {
     }
   };
 
+  const toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],
+    ['blockquote'],
+    ['link', 'image', 'video'],
+
+    [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+    [{ indent: '-1' }, { indent: '+1' }],
+
+    [{ header: [1, 2, 3, false] }],
+
+    [{ color: [] }, { background: [] }],
+    [{ align: [] }],
+
+    ['clean'],
+  ];
+
   return (
     <div className="pt-6 pb-4">
       <div className="max-w-3xl mx-auto">
@@ -95,13 +116,12 @@ export default function CreateArticleFeature() {
               <label className="label">
                 <span className="label-text">Content</span>
               </label>
-              <textarea
-                placeholder="Write your article content here..."
-                className="textarea textarea-bordered w-full"
-                rows={9}
+              <ReactQuill
+                modules={{ toolbar: toolbarOptions }}
+                theme="snow"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                required
+                onChange={setContent}
+                placeholder="Write your article content here..."
               />
             </div>
 
