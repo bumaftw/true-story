@@ -109,8 +109,11 @@ export default function ArticleDetailFeature() {
       {/* Article Content */}
       <div className="prose prose-lg max-w-none">
         <div
-          className="ql-editor"
-          style={{ padding: 0 }}
+          className={`ql-editor ${(!isAuthor && !article.payments?.length) ? 'line-clamp-3' : ''}`}
+          style={{
+            padding: 0,
+            overflow: 'hidden',
+          }}
           dangerouslySetInnerHTML={{ __html: article.content }}
         ></div>
       </div>
