@@ -74,7 +74,6 @@ export default function CreateArticleFeature() {
 
     [{ header: [1, 2, 3, false] }],
 
-    [{ color: [] }, { background: [] }],
     [{ align: [] }],
 
     ['clean'],

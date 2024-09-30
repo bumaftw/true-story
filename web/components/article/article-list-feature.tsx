@@ -6,6 +6,7 @@ import { getArticlesList } from '@/services/getArticlesList';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
+import 'react-quill/dist/quill.snow.css';
 
 const ARTICLES_QUERY_KEY = 'articles_list_query_key';
 const ARTICLES_PER_PAGE = 5;
@@ -74,11 +75,16 @@ export default function ArticleListFeature() {
                   {article.title}
                 </h2>
 
-                {/* Content preview limited to 3 lines */}
-                <p
-                  className="text-gray-700 line-clamp-3"
-                  dangerouslySetInnerHTML={{ __html: article.content }}
-                ></p>
+                <div className="prose prose-lg max-w-none">
+                  <div
+                    className="ql-editor line-clamp-3"
+                    style={{
+                      padding: 0,
+                      overflow: 'hidden',
+                    }}
+                    dangerouslySetInnerHTML={{ __html: article.content }}
+                  ></div>
+                </div>
 
                 <div className="card-actions justify-end mt-4">
                   {/* Read More Button to Navigate to Article Details */}

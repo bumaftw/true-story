@@ -11,6 +11,7 @@ import { ExplorerLink } from '../cluster/cluster-ui';
 import { PublicKey } from '@solana/web3.js';
 import { useState } from 'react';
 import { useTransferToken } from '../account/account-data-access';
+import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
 
@@ -107,7 +108,11 @@ export default function ArticleDetailFeature() {
 
       {/* Article Content */}
       <div className="prose prose-lg max-w-none">
-        <div dangerouslySetInnerHTML={{ __html: article.content }}></div>
+        <div
+          className="ql-editor"
+          style={{ padding: 0 }}
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        ></div>
       </div>
 
       {/* Show pay button if user hasn't paid and user is not the author */}
