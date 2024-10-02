@@ -12,7 +12,14 @@ import {
   AccountButtons,
   AccountTokens,
   AccountTransactions,
+  ProfileCard,
 } from './account-ui';
+
+const mockUserData = {
+  username: null,
+  avatarUrl: null,
+  xLink: null,
+};
 
 export default function AccountDetailFeature() {
   const params = useParams();
@@ -26,6 +33,15 @@ export default function AccountDetailFeature() {
       console.log(`Invalid public key`, e);
     }
   }, [params]);
+
+  const handleProfileSave = (data: {
+    username: string | null;
+    avatarUrl: string | null;
+    xLink: string | null;
+  }) => {
+    console.log('Profile updated:', data);
+  };
+
   if (!address) {
     return <div>Error loading account</div>;
   }
@@ -47,7 +63,14 @@ export default function AccountDetailFeature() {
           <AccountButtons address={address} />
         </div>
       </AppHero>
+
       <div className="space-y-8">
+        <ProfileCard
+          username={mockUserData.username}
+          avatarUrl={mockUserData.avatarUrl}
+          xLink={mockUserData.xLink}
+          onSave={handleProfileSave}
+        />
         <AccountTokens address={address} />
         <AccountTransactions address={address} />
       </div>
