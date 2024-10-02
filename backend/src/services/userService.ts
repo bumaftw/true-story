@@ -15,9 +15,7 @@ export async function createUser(
   }
 }
 
-export async function getUserByPublicKey(
-  publicKey: string
-): Promise<User> {
+export async function getUserByPublicKey(publicKey: string): Promise<User> {
   const user = await User.findOne({
     where: { publicKey },
   });

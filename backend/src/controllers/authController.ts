@@ -5,6 +5,7 @@ import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import config from '../shared/config';
 import logger from '../shared/logger';
+import { NotFoundError } from '../shared/errors';
 import * as userService from '../services/userService';
 
 const JWT_SECRET_KEY = config.get('JWT_SECRET_KEY');
@@ -20,16 +21,23 @@ export const getNonce = async (req: Request, res: Response) => {
   }
 
   const nonce = generateNonce();
-  const [, [user]] = await userService.updateUserByPublicKey(publicKey, {
-    nonce,
-  });
-  if (!user) {
-    await userService.createUser({
-      publicKey,
-      role: 'reader',
+
+  try {
+    await userService.updateUserByPublicKey(publicKey, {
       nonce,
     });
-    logger.debug('New user created', { publicKey, nonce });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      await userService.createUser({
+        publicKey,
+        role: 'reader',
+        nonce,
+      });
+
+      logger.debug('New user created', { publicKey, nonce });
+    }
+
+    throw error;
   }
 
   return res.status(200).json({ nonce });
