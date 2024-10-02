@@ -321,28 +321,28 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
 
 type ProfileCardProps = {
   username: string | null;
-  avatarUrl: string | null;
+  avatar: string | null;
   xLink: string | null;
   onSave: (data: {
     username: string | null;
-    avatarUrl: string | null;
+    avatar: string | null;
     xLink: string | null;
   }) => void;
 };
 
 export function ProfileCard({
   username: initialUsername,
-  avatarUrl: initialAvatarUrl,
+  avatar: initialAvatar,
   xLink: initialXLink,
   onSave,
 }: ProfileCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [username, setUsername] = useState(initialUsername);
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [avatar, setAvatarUrl] = useState(initialAvatar);
   const [xLink, setXLink] = useState(initialXLink);
 
   const handleSave = () => {
-    onSave({ username, avatarUrl, xLink });
+    onSave({ username, avatar, xLink });
     setIsEditing(false);
   };
 
@@ -366,7 +366,7 @@ export function ProfileCard({
         {/* Avatar Section */}
         <div className="avatar flex items-center justify-center">
           <div className="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2 flex items-center justify-center">
-            <img src={avatarUrl || '/default-avatar.webp'} alt="User Avatar" />
+            <img src={avatar || '/default-avatar.webp'} alt="User Avatar" />
           </div>
         </div>
 

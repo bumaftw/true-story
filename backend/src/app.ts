@@ -8,7 +8,8 @@ import { corsMiddleware } from './middlewares/corsMiddleware';
 
 const app: Express = express();
 
-app.use(express.json());
+// TODO: reduce limit after image uploading implemented
+app.use(express.json({ limit: '10mb' }));
 app.use(
   morgan('dev', {
     stream: { write: (message) => logger.info(message.trim()) },
