@@ -74,13 +74,15 @@ export default function ArticleListFeature() {
               key={index}
               className="card bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
             >
-              <figure>
-                <img
-                  src={article.imageUrl || '/default-image.jpg'}
-                  alt={article.title}
-                  className="h-64 w-full object-cover rounded-t-lg"
-                />
-              </figure>
+              {article.imageUrl ? (
+                <figure>
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    className="h-64 w-full object-cover rounded-t-lg"
+                  />
+                </figure>
+              ) : null}
               <div className="card-body">
                 <h2 className="card-title text-2xl font-semibold">
                   {article.title}
