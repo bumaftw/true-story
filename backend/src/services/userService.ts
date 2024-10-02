@@ -17,18 +17,30 @@ export async function createUser(
 
 export async function getUserByPublicKey(
   publicKey: string
-): Promise<User | null> {
-  return User.findOne({
+): Promise<User> {
+  const user = await User.findOne({
     where: { publicKey },
   });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
+  return user;
 }
 
 export async function updateUserByPublicKey(
   publicKey: string,
   userAttributes: Partial<UserCreationAttributes>
-): Promise<[number, User[]]> {
-  return User.update(userAttributes, {
+): Promise<User> {
+  const [, [user]] = await User.update(userAttributes, {
     where: { publicKey },
     returning: true,
   });
+
+  if (!user) {
+    throw new NotFoundError('User not found');
+  }
+
+  return user;
 }

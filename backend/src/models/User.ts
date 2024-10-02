@@ -9,13 +9,15 @@ export type UserAttributes = {
   role: UserRole;
   username?: string | null;
   nonce?: string | null;
+  avatar?: string | null;
+  xLink?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type UserCreationAttributes = Optional<
   UserAttributes,
-  'id' | 'username' | 'nonce' | 'createdAt' | 'updatedAt'
+  'id' | 'username' | 'nonce' | 'avatar' | 'xLink' | 'createdAt' | 'updatedAt'
 >;
 
 export class User
@@ -27,6 +29,8 @@ export class User
   declare role: 'journalist' | 'reader';
   declare username: string | null;
   declare nonce: string | null;
+  declare avatar: string | null;
+  declare xLink: string | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -54,6 +58,15 @@ User.init(
       unique: true,
     },
     nonce: DataTypes.STRING,
+    avatar: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    xLink: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: 'x_link',
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

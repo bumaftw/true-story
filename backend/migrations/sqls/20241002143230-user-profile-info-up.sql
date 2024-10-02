@@ -1,0 +1,3 @@
+ALTER TABLE users
+ADD COLUMN avatar TEXT,
+ADD COLUMN x_link TEXT;
