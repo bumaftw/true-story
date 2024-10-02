@@ -6,6 +6,7 @@ import { getArticlesList } from '@/services/getArticlesList';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
+import { WalletButton } from '@/components/solana/solana-provider';
 import 'react-quill/dist/quill.snow.css';
 
 const ARTICLES_QUERY_KEY = 'articles_list_query_key';
@@ -52,6 +53,16 @@ export default function ArticleListFeature() {
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const articles = data?.pages.flat() || [];
+
+  if (!connected) {
+    return (
+      <div className="hero py-[64px]">
+        <div className="hero-content text-center">
+          <WalletButton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative pt-6 pb-4">

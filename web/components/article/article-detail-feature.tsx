@@ -11,6 +11,7 @@ import { ExplorerLink } from '../cluster/cluster-ui';
 import { PublicKey } from '@solana/web3.js';
 import { useState } from 'react';
 import { useTransferToken } from '../account/account-data-access';
+import { WalletButton } from '@/components/solana/solana-provider';
 import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
@@ -68,6 +69,16 @@ export default function ArticleDetailFeature() {
       setLoading(false);
     }
   };
+
+  if (!connected) {
+    return (
+      <div className="hero py-[64px]">
+        <div className="hero-content text-center">
+          <WalletButton />
+        </div>
+      </div>
+    );
+  }
 
   if (!article) {
     return <div className="text-center py-20">Loading article...</div>;

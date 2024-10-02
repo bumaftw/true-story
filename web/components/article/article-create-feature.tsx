@@ -7,6 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { createArticle } from '@/services/createArticle';
 import { toast } from 'react-hot-toast';
 import dynamic from 'next/dynamic';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletButton } from '@/components/solana/solana-provider';
 
 // Dynamically import ReactQuill to ensure it works in Next.js SSR
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
@@ -14,6 +16,7 @@ import 'react-quill/dist/quill.snow.css';
 
 export default function CreateArticleFeature() {
   const router = useRouter();
+  const { connected } = useWallet();
   const { getToken } = useAuth();
 
   const [title, setTitle] = useState('');
@@ -78,6 +81,16 @@ export default function CreateArticleFeature() {
 
     ['clean'],
   ];
+
+  if (!connected) {
+    return (
+      <div className="hero py-[64px]">
+        <div className="hero-content text-center">
+          <WalletButton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-6 pb-4">
