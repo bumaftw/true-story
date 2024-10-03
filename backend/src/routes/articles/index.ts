@@ -3,7 +3,7 @@ import {
   getArticles,
   getArticleById,
   createArticle,
-} from '../../controllers/articleController.ts';
+} from '../../controllers/articleController';
 import { verifyToken } from '../../middlewares/authMiddleware';
 
 const router = Router();
