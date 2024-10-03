@@ -5,7 +5,7 @@ const sslConfig = process.env.NODE_ENV !== 'local' &&
   process.env.NODE_ENV !== 'test' && {
     ssl: {
       require: true,
-      rejectUnauthorized: true,
+      rejectUnauthorized: false,
       ca: process.env.CA_CERT,
     },
   };
