@@ -2,14 +2,16 @@
   "name": "@true-story/api",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "dev": "nodemon --exec ts-node --files src/index.ts",
     "db:migrate": "db-migrate up",
     "migration:up": "db-migrate up",
     "migrate:up": "db-migrate up",
     "migration:down": "db-migrate down",
     "migrate:down": "db-migrate down",
+    "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -26,6 +28,7 @@
     "winston": "^3.14.2"
   },
   "devDependencies": {
+    "@tsconfig/node-lts": "^20.1.3",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/morgan": "^1.9.9",
     "db-migrate": "^0.11.14",

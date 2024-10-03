@@ -10,7 +10,8 @@
     "feature": "nx generate @solana-developers/preset-react:feature",
     "build": "nx build web",
     "dev": "nx serve web",
-    "prettier": "prettier . --write"
+    "prettier": "prettier . --write",
+    "start": "next start dist/web -p 4000"
   },
   "private": true,
   "dependencies": {
