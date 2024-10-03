@@ -17,7 +17,8 @@ function generateNonce(): string {
 export const getNonce = async (req: Request, res: Response) => {
   const publicKey = req.body.publicKey;
   if (!publicKey) {
-    return res.status(400).json({ error: 'Public key is required' });
+    res.status(400).json({ error: 'Public key is required' });
+    return;
   }
 
   const nonce = generateNonce();
@@ -40,26 +41,29 @@ export const getNonce = async (req: Request, res: Response) => {
     throw error;
   }
 
-  return res.status(200).json({ nonce });
+  res.status(200).json({ nonce });
 };
 
 export const verifySignature = async (req: Request, res: Response) => {
   const { publicKey, signature } = req.body;
 
   if (!publicKey || !signature) {
-    return res
+    res
       .status(400)
       .json({ error: 'Public key and signature are required' });
+    return;
   }
 
   const user = await userService.getUserByPublicKey(publicKey);
   if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+    res.status(404).json({ error: 'User not found' });
+    return;
   }
   if (!user.nonce) {
-    return res
+    res
       .status(400)
       .json({ error: 'No nonce found for this public key' });
+    return;
   }
 
   try {
@@ -74,7 +78,8 @@ export const verifySignature = async (req: Request, res: Response) => {
     );
 
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid signature' });
+      res.status(401).json({ error: 'Invalid signature' });
+      return;
     }
 
     const token = jwt.sign({ publicKey }, JWT_SECRET_KEY);
@@ -82,9 +87,9 @@ export const verifySignature = async (req: Request, res: Response) => {
     user.nonce = null;
     await user.save();
 
-    return res.status(200).json({ token });
+    res.status(200).json({ token });
   } catch (error) {
     logger.error('Error verifying signature', error);
-    return res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error' });
   }
 };

@@ -19,5 +19,5 @@ export async function verifyPayment(
     signature
   );
 
-  return res.json(payment);
+  res.json(payment);
 }

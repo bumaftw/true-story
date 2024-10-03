@@ -13,12 +13,13 @@ export const verifyToken = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(403).json({ error: 'No token provided' });
+    res.status(403).json({ error: 'No token provided' });
+    return;
   }
 
   jwt.verify(token, SECRET_KEY, async (err, decoded) => {

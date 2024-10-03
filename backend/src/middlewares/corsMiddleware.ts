@@ -9,7 +9,7 @@ export function corsMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
-): void | Response {
+): void {
   const origin = req.headers.origin
     ? req.headers.origin.toString().toLowerCase()
     : '';
@@ -29,8 +29,8 @@ export function corsMiddleware(
 
   // Response to browser preflight request
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    res.sendStatus(200);
+  } else {
+    next();
   }
-
-  return next();
 }

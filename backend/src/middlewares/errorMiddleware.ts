@@ -9,7 +9,7 @@ export function errorHandlerMiddleware(
   res: Response<ErrorResponse>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction
-): Response {
+): void {
   const isHttpError = error instanceof HttpError;
   const isJsonFormatError = error instanceof SyntaxError && 'body' in error;
 
@@ -35,7 +35,7 @@ export function errorHandlerMiddleware(
     logger.debug(error);
   }
 
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     error: {
       name: errorName,
       message: errorMessage,
