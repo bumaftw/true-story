@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ArticleAttributes, ArticleCreationAttributes } from '../models';
-import * as articleService from '../services/articleService';
+import * as articleService from '../services/articleService.ts';
 
 export async function getArticles(
   req: Request,
