@@ -10,7 +10,6 @@ import dynamic from 'next/dynamic';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletButton } from '@/components/solana/solana-provider';
 
-// Dynamically import ReactQuill to ensure it works in Next.js SSR
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
 
@@ -21,7 +20,7 @@ export default function CreateArticleFeature() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [price, setPrice] = useState(0.2);
   const [loading, setLoading] = useState(false);
 
@@ -30,18 +29,19 @@ export default function CreateArticleFeature() {
     mutationFn: async (input: {
       title: string;
       content: string;
-      imageUrl?: string;
+      imageFile?: string;
       price: number;
     }) => {
       setLoading(true);
 
       const token = await getToken();
+
       const response = await createArticle({
         token,
         data: {
           title: input.title,
           content: input.content,
-          imageUrl: input.imageUrl,
+          imageUrl: input.imageFile,
           price: input.price,
         },
       });
@@ -61,9 +61,28 @@ export default function CreateArticleFeature() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (title && content) {
-      await mutateAsync({ title, content, imageUrl, price });
+      let imageBase64 = '';
+
+      // TODO: implement file uploading
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        imageBase64 = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = (error) => reject(error);
+        });
+      }
+
+      await mutateAsync({ title, content, imageFile: imageBase64, price });
     } else {
       toast.error('Please fill out the required fields');
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
     }
   };
 
@@ -139,14 +158,14 @@ export default function CreateArticleFeature() {
 
             <div className="form-control mb-3">
               <label className="label">
-                <span className="label-text">Image URL</span>
+                <span className="label-text">Image</span>
               </label>
               <input
-                type="url"
-                placeholder="https://example.com/image.jpg"
+                type="file"
+                accept="image/*"
                 className="input input-bordered w-full"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
+                style={{ paddingTop: '0.5rem' }}
+                onChange={handleImageChange}
               />
             </div>
 

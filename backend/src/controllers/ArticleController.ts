@@ -38,6 +38,7 @@ export async function createArticle(
   const article = await articleService.createArticle({
     title: req.body.title,
     content: req.body.content,
+    // TODO: implement image uploading
     imageUrl: req.body.imageUrl,
     authorId: req.user!.id,
     price: req.body.price,

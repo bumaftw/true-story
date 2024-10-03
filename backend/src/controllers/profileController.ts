@@ -26,6 +26,7 @@ export async function updateProfile(
 ): Promise<Response> {
   const profile = await userService.updateUserByPublicKey(req.user!.publicKey, {
     username: req.body.username,
+    // TODO: implement image uploading
     avatar: req.body.avatar,
     xLink: req.body.xLink,
   });
