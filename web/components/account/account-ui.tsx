@@ -293,7 +293,7 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
                           Failed
                         </div>
                       ) : (
-                        <div className="badge badge-success">Success</div>
+                        <div className="badge badge-success text-white">Success</div>
                       )}
                     </td>
                   </tr>
