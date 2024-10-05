@@ -72,59 +72,57 @@ export default function ArticleListFeature({
   }
 
   return (
-    <div className="relative pt-6 pb-4">
-      <div className="max-w-3xl mx-auto">
-        {/* Article Cards (Single Column) */}
-        <div className="space-y-6">
-          {articles.map((article, index) => (
-            <div
-              key={index}
-              className="card bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
-            >
-              {article.imageUrl ? (
-                <figure>
-                  <img
-                    src={article.imageUrl}
-                    alt={article.title}
-                    className="h-64 w-full object-cover rounded-t-lg"
-                  />
-                </figure>
-              ) : null}
-              <div className="card-body">
-                <h2 className="card-title text-2xl font-semibold">
-                  {article.title}
-                </h2>
+    <div className="max-w-3xl mx-auto">
+      {/* Article Cards (Single Column) */}
+      <div className="space-y-6">
+        {articles.map((article, index) => (
+          <div
+            key={index}
+            className="card bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
+          >
+            {article.imageUrl ? (
+              <figure>
+                <img
+                  src={article.imageUrl}
+                  alt={article.title}
+                  className="h-64 w-full object-cover rounded-t-lg"
+                />
+              </figure>
+            ) : null}
+            <div className="card-body">
+              <h2 className="card-title text-2xl font-semibold">
+                {article.title}
+              </h2>
 
-                <div className="prose prose-lg max-w-none">
-                  <div
-                    className="ql-editor line-clamp-3"
-                    style={{
-                      padding: 0,
-                      overflow: 'hidden',
-                    }}
-                    dangerouslySetInnerHTML={{ __html: article.content }}
-                  ></div>
-                </div>
+              <div className="prose prose-lg max-w-none">
+                <div
+                  className="ql-editor line-clamp-3"
+                  style={{
+                    padding: 0,
+                    overflow: 'hidden',
+                  }}
+                  dangerouslySetInnerHTML={{ __html: article.content }}
+                ></div>
+              </div>
 
-                <div className="card-actions justify-end mt-4">
-                  {/* Read More Button to Navigate to Article Details */}
-                  <Link href={`/articles/${article.id}`} passHref>
-                    <button className="btn btn-outline btn-primary hover:btn-primary-focus">
-                      Read More
-                    </button>
-                  </Link>
-                </div>
+              <div className="card-actions justify-end mt-4">
+                {/* Read More Button to Navigate to Article Details */}
+                <Link href={`/articles/${article.id}`} passHref>
+                  <button className="btn btn-outline btn-primary hover:btn-primary-focus">
+                    Read More
+                  </button>
+                </Link>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
 
-          {/* Loading more spinner */}
-          {isFetchingNextPage && (
-            <div className="text-center py-6">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          )}
-        </div>
+        {/* Loading more spinner */}
+        {isFetchingNextPage && (
+          <div className="text-center py-6">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        )}
       </div>
     </div>
   );

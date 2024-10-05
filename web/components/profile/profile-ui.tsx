@@ -1,22 +1,21 @@
 'use client';
 
 import { useState } from 'react';
+import { ExplorerLink } from '../cluster/cluster-ui';
 
 export type ProfileData = {
-  username: string | null;
-  avatar: string | null;
-  xLink: string | null;
+  publicKey: string;
+  username?: string | null;
+  avatar?: string | null;
+  xLink?: string | null;
 };
 
 export type ProfileCardProps = ProfileData & {
-  onSave: (data: {
-    username: string | null;
-    avatar: string | null;
-    xLink: string | null;
-  }) => void;
+  onSave?: (data: ProfileData) => void;
 };
 
 export function ProfileCard({
+  publicKey,
   username: initialUsername,
   avatar: initialAvatar,
   xLink: initialXLink,
@@ -28,7 +27,9 @@ export function ProfileCard({
   const [xLink, setXLink] = useState(initialXLink);
 
   const handleSave = () => {
-    onSave({ username, avatar, xLink });
+    if (onSave) {
+      onSave({ publicKey, username, avatar, xLink });
+    }
     setIsEditing(false);
   };
 
@@ -57,7 +58,7 @@ export function ProfileCard({
         </div>
 
         {/* Edit Section */}
-        {isEditing ? (
+        {onSave && isEditing ? (
           <div
             className="flex-grow flex flex-col justify-center space-y-2 px-4"
             style={{ height: '112px' }}
@@ -93,7 +94,11 @@ export function ProfileCard({
             style={{ height: '112px' }}
           >
             <h2 className="text-xl font-semibold truncate leading-tight">
-              {username || 'Anonymous'}
+              <ExplorerLink
+                path={`account/${publicKey}`}
+                label={username || 'Anonymous'}
+                className="hover:underline"
+              />
             </h2>
             <p className="truncate leading-tight">
               {xLink ? (
@@ -113,20 +118,22 @@ export function ProfileCard({
         )}
 
         {/* Button Section */}
-        <div className="ml-4 flex items-center justify-center">
-          {isEditing ? (
-            <button className="btn btn-sm btn-primary" onClick={handleSave}>
-              Save
-            </button>
-          ) : (
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit
-            </button>
-          )}
-        </div>
+        {onSave && (
+          <div className="ml-4 flex items-center justify-center">
+            {isEditing ? (
+              <button className="btn btn-sm btn-primary" onClick={handleSave}>
+                Save
+              </button>
+            ) : (
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

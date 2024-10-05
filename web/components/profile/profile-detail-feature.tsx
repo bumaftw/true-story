@@ -5,17 +5,16 @@ import { PublicKey } from '@solana/web3.js';
 import { useParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
-import { ExplorerLink } from '../cluster/cluster-ui';
 import { ProfileCard, ProfileData } from './profile-ui';
 import { useAuth } from '@/hooks/useAuth';
 import { getProfile } from '@/services/getProfile';
-import { updateProfile } from '@/services/updateProfile';
 import ArticleListFeature from '@/components/article/article-list-feature';
 
 export default function ProfileDetailFeature() {
   const params = useParams();
   const { getToken } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
+    publicKey: '',
     username: null,
     avatar: null,
     xLink: null,
@@ -24,12 +23,13 @@ export default function ProfileDetailFeature() {
 
   const address = useMemo(() => {
     if (!params.address) {
-      return;
+      return null;
     }
     try {
       return new PublicKey(params.address);
     } catch (e) {
-      console.log(`Invalid public key`, e);
+      console.log('Invalid public key', e);
+      return null;
     }
   }, [params]);
 
@@ -38,8 +38,12 @@ export default function ProfileDetailFeature() {
       if (address) {
         try {
           const token = await getToken();
-          const profile = await getProfile({ token });
+          const profile = await getProfile({
+            token,
+            publicKey: address.toString(),
+          });
           setProfileData({
+            publicKey: profile.publicKey,
             username: profile.username,
             avatar: profile.avatar,
             xLink: profile.xLink,
@@ -56,46 +60,31 @@ export default function ProfileDetailFeature() {
     fetchProfile();
   }, [address]);
 
-  const handleProfileSave = async (data: {
-    username: string | null;
-    avatar: string | null;
-    xLink: string | null;
-  }) => {
-    try {
-      const token = await getToken();
-      await updateProfile({
-        data,
-        token,
-      });
-      setProfileData(data);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(`Failed to update profile: ${error.message}`);
-      }
-    }
-  };
-
   if (!address) {
     return <div>Error loading profile</div>;
   }
 
   return (
-    <div>
-      <ExplorerLink path={`account/${address}`} label={address.toString()} />
-
-      <div className="space-y-8">
+    <div className="container mx-auto py-8">
+      <div className="max-w-3xl mx-auto space-y-8">
         {loading ? (
-          <div>Loading profile...</div>
+          <div className="text-center text-gray-600">Loading profile...</div>
         ) : (
-          <ProfileCard
-            username={profileData.username}
-            avatar={profileData.avatar}
-            xLink={profileData.xLink}
-            onSave={handleProfileSave}
-          />
+          <>
+            <ProfileCard
+              publicKey={profileData.publicKey}
+              username={profileData.username}
+              avatar={profileData.avatar}
+              xLink={profileData.xLink}
+            />
+
+            <h2 className="text-xl font-semibold text-center">
+              Articles by {profileData.username || 'this author'}
+            </h2>
+
+            <ArticleListFeature publicKey={address.toString()} />
+          </>
         )}
-        <h2 className="text-2xl font-bold">Articles by this author</h2>
-        <ArticleListFeature publicKey={address.toString()} />
       </div>
     </div>
   );
