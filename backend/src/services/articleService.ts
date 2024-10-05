@@ -70,7 +70,7 @@ export async function getArticles(
       {
         model: User,
         as: 'author',
-        attributes: ['id', 'username', 'publicKey'],
+        attributes: ['id', 'publicKey', 'username', 'avatar'],
       },
     ],
     attributes: {
