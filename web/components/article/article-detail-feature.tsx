@@ -7,11 +7,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useParams } from 'next/navigation';
 import { format } from 'date-fns';
-import { ExplorerLink } from '../cluster/cluster-ui';
 import { PublicKey } from '@solana/web3.js';
 import { useState } from 'react';
-import { useTransferToken } from '../account/account-data-access';
+import { useTransferToken } from '@/components/account/account-data-access';
 import { WalletButton } from '@/components/solana/solana-provider';
+import { ProfileLabel } from '@/components/profile/profile-ui';
 import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
@@ -100,18 +100,11 @@ export default function ArticleDetailFeature() {
       )}
 
       {/* Article Title */}
-      <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+      <h1 className="text-3xl font-bold mb-5">{article.title}</h1>
 
       {/* Author and Created Date */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="text-sm text-gray-500">
-          Author:{' '}
-          <ExplorerLink
-            path={`address/${article.author!.publicKey}`}
-            label={article.author!.publicKey}
-            className="text-primary underline"
-          />
-        </div>
+      <div className="flex justify-between items-center mb-5">
+        <ProfileLabel author={article.author!} />
         <div className="text-sm text-gray-500">
           Published on: {format(new Date(article.createdAt), 'MMMM dd, yyyy')}
         </div>

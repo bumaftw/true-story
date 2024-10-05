@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { ExplorerLink } from '../cluster/cluster-ui';
 
@@ -134,6 +135,29 @@ export function ProfileCard({
             )}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+export function ProfileLabel({ author }: { author: ProfileData }) {
+  return (
+    <div className="flex items-center space-x-4">
+      <div className="avatar">
+        <div className="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+          <img
+            src={author.avatar || '/default-avatar.webp'}
+            alt="Author Avatar"
+          />
+        </div>
+      </div>
+      <div className="text-sm">
+        <Link
+          className="text-primary hover:underline"
+          href={`/profile/${author.publicKey}`}
+        >
+          {author.username || 'Anonymous'}
+        </Link>
       </div>
     </div>
   );

@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
+import { format } from 'date-fns';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getArticlesList } from '@/services/getArticlesList';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
 import { WalletButton } from '@/components/solana/solana-provider';
+import { ProfileLabel } from '@/components/profile/profile-ui';
 import 'react-quill/dist/quill.snow.css';
 
 const ARTICLES_QUERY_KEY = 'articles_list_query_key';
@@ -25,7 +27,7 @@ export default function ArticleListFeature({
   // Infinite query for loading more articles
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [ARTICLES_QUERY_KEY, publicKey], // Add publicKey to the queryKey for caching
+      queryKey: [ARTICLES_QUERY_KEY, publicKey],
       queryFn: async ({ pageParam = 0 }) => {
         const token = await getToken();
         return await getArticlesList({
@@ -93,6 +95,13 @@ export default function ArticleListFeature({
               <h2 className="card-title text-2xl font-semibold">
                 {article.title}
               </h2>
+
+              <div className="flex justify-between items-center my-2">
+                {!publicKey ? <ProfileLabel author={article.author!} /> : null}
+                <div className="text-sm text-gray-500">
+                  {format(new Date(article.createdAt), 'MMMM dd, yyyy')}
+                </div>
+              </div>
 
               <div className="prose prose-lg max-w-none">
                 <div
