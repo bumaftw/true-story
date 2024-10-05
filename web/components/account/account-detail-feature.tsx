@@ -22,6 +22,7 @@ export default function AccountDetailFeature() {
   const params = useParams();
   const { getToken } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
+    publicKey: '',
     username: null,
     avatar: null,
     xLink: null,
@@ -46,6 +47,7 @@ export default function AccountDetailFeature() {
           const token = await getToken();
           const profile = await getProfile({ token });
           setProfileData({
+            publicKey: profile.publicKey,
             username: profile.username,
             avatar: profile.avatar,
             xLink: profile.xLink,
@@ -62,11 +64,7 @@ export default function AccountDetailFeature() {
     fetchProfile();
   }, [address]);
 
-  const handleProfileSave = async (data: {
-    username: string | null;
-    avatar: string | null;
-    xLink: string | null;
-  }) => {
+  const handleProfileSave = async (data: ProfileData) => {
     try {
       const token = await getToken();
       await updateProfile({
@@ -108,6 +106,7 @@ export default function AccountDetailFeature() {
           <div>Loading profile...</div>
         ) : (
           <ProfileCard
+            publicKey={profileData.publicKey}
             username={profileData.username}
             avatar={profileData.avatar}
             xLink={profileData.xLink}
