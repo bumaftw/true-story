@@ -44,21 +44,25 @@ export type GetArticlesParams = {
   limit?: number;
   offset?: number;
   searchQuery?: string | null;
+  author?: string | null;
 };
 
 export async function getArticles(
   params: GetArticlesParams = {}
 ): Promise<Article[]> {
-  const { limit = 10, offset = 0, searchQuery = null } = params;
+  const { limit = 10, offset = 0, searchQuery = null, author = null } = params;
 
-  const whereClause = searchQuery
-    ? {
-        [Op.or]: [
-          { title: { [Op.iLike]: `%${searchQuery}%` } },
-          { content: { [Op.iLike]: `%${searchQuery}%` } },
-        ],
-      }
-    : {};
+  const whereClause = {
+    ...(searchQuery && {
+      [Op.or]: [
+        { title: { [Op.iLike]: `%${searchQuery}%` } },
+        { content: { [Op.iLike]: `%${searchQuery}%` } },
+      ],
+    }),
+    ...(author && {
+      '$author.public_key$': author,
+    }),
+  };
 
   return Article.findAll({
     where: whereClause,
@@ -77,7 +81,7 @@ export async function getArticles(
         'authorId',
         'createdAt',
         'updatedAt',
-        [Sequelize.fn('LEFT', Sequelize.col('content'), 300), 'content'], // Limit content to 100 characters
+        [Sequelize.fn('LEFT', Sequelize.col('content'), 300), 'content'], // Limit content to 300 characters
       ],
     },
     limit,

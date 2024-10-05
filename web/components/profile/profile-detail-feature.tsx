@@ -6,19 +6,13 @@ import { useParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
 import { ExplorerLink } from '../cluster/cluster-ui';
-import { AppHero, ellipsify } from '../ui/ui-layout';
-import {
-  AccountBalance,
-  AccountButtons,
-  AccountTokens,
-  AccountTransactions,
-} from './account-ui';
-import { ProfileCard, ProfileData } from '../profile/profile-ui';
+import { ProfileCard, ProfileData } from './profile-ui';
 import { useAuth } from '@/hooks/useAuth';
 import { getProfile } from '@/services/getProfile';
 import { updateProfile } from '@/services/updateProfile';
+import ArticleListFeature from '@/components/article/article-list-feature';
 
-export default function AccountDetailFeature() {
+export default function ProfileDetailFeature() {
   const params = useParams();
   const { getToken } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -82,26 +76,12 @@ export default function AccountDetailFeature() {
   };
 
   if (!address) {
-    return <div>Error loading account</div>;
+    return <div>Error loading profile</div>;
   }
 
   return (
     <div>
-      <AppHero
-        title={<AccountBalance address={address} />}
-        subtitle={
-          <div className="my-4">
-            <ExplorerLink
-              path={`account/${address}`}
-              label={ellipsify(address.toString())}
-            />
-          </div>
-        }
-      >
-        <div className="my-4">
-          <AccountButtons address={address} />
-        </div>
-      </AppHero>
+      <ExplorerLink path={`account/${address}`} label={address.toString()} />
 
       <div className="space-y-8">
         {loading ? (
@@ -114,8 +94,8 @@ export default function AccountDetailFeature() {
             onSave={handleProfileSave}
           />
         )}
-        <AccountTokens address={address} />
-        <AccountTransactions address={address} />
+        <h2 className="text-2xl font-bold">Articles by this author</h2>
+        <ArticleListFeature publicKey={address.toString()} />
       </div>
     </div>
   );

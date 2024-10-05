@@ -12,20 +12,27 @@ import 'react-quill/dist/quill.snow.css';
 const ARTICLES_QUERY_KEY = 'articles_list_query_key';
 const ARTICLES_PER_PAGE = 5;
 
-export default function ArticleListFeature() {
+type ArticleListFeatureProps = {
+  publicKey?: string;
+};
+
+export default function ArticleListFeature({
+  publicKey,
+}: ArticleListFeatureProps) {
   const { connected } = useWallet();
   const { getToken } = useAuth();
 
   // Infinite query for loading more articles
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: [ARTICLES_QUERY_KEY],
+      queryKey: [ARTICLES_QUERY_KEY, publicKey], // Add publicKey to the queryKey for caching
       queryFn: async ({ pageParam = 0 }) => {
         const token = await getToken();
         return await getArticlesList({
           token,
           limit: ARTICLES_PER_PAGE,
           offset: pageParam,
+          author: publicKey,
         });
       },
       initialPageParam: 0,
@@ -119,13 +126,6 @@ export default function ArticleListFeature() {
           )}
         </div>
       </div>
-
-      {/* Floating Create Article Button */}
-      <Link href="/articles/create">
-        <button className="btn btn-primary fixed bottom-20 right-6 rounded-full shadow-lg">
-          Create Article
-        </button>
-      </Link>
     </div>
   );
 }

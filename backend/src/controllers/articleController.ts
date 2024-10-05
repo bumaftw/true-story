@@ -9,11 +9,13 @@ export async function getArticles(
   const offset = Number(req.query.offset) || 0;
   const limit = Number(req.query.limit) || 10;
   const searchQuery = req.query.search ? String(req.query.search) : null;
+  const author = req.query.author ? String(req.query.author) : null;
 
   const articles = await articleService.getArticles({
     limit,
     offset,
     searchQuery,
+    author,
   });
 
   res.json(articles);

@@ -48,9 +48,7 @@ export const verifySignature = async (req: Request, res: Response) => {
   const { publicKey, signature } = req.body;
 
   if (!publicKey || !signature) {
-    res
-      .status(400)
-      .json({ error: 'Public key and signature are required' });
+    res.status(400).json({ error: 'Public key and signature are required' });
     return;
   }
 
@@ -60,9 +58,7 @@ export const verifySignature = async (req: Request, res: Response) => {
     return;
   }
   if (!user.nonce) {
-    res
-      .status(400)
-      .json({ error: 'No nonce found for this public key' });
+    res.status(400).json({ error: 'No nonce found for this public key' });
     return;
   }
 
