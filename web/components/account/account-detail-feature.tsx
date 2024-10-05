@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { useParams } from 'next/navigation';
-import { toast } from 'react-hot-toast';
 
 import { ExplorerLink } from '../cluster/cluster-ui';
 import { AppHero, ellipsify } from '../ui/ui-layout';
@@ -13,21 +12,9 @@ import {
   AccountTokens,
   AccountTransactions,
 } from './account-ui';
-import { ProfileCard, ProfileData } from '../profile/profile-ui';
-import { useAuth } from '@/hooks/useAuth';
-import { getProfile } from '@/services/getProfile';
-import { updateProfile } from '@/services/updateProfile';
 
 export default function AccountDetailFeature() {
   const params = useParams();
-  const { getToken } = useAuth();
-  const [profileData, setProfileData] = useState<ProfileData>({
-    publicKey: '',
-    username: null,
-    avatar: null,
-    xLink: null,
-  });
-  const [loading, setLoading] = useState(true);
 
   const address = useMemo(() => {
     if (!params.address) {
@@ -39,45 +26,6 @@ export default function AccountDetailFeature() {
       console.log(`Invalid public key`, e);
     }
   }, [params]);
-
-  useEffect(() => {
-    async function fetchProfile() {
-      if (address) {
-        try {
-          const token = await getToken();
-          const profile = await getProfile({ token });
-          setProfileData({
-            publicKey: profile.publicKey,
-            username: profile.username,
-            avatar: profile.avatar,
-            xLink: profile.xLink,
-          });
-        } catch (error) {
-          if (error instanceof Error) {
-            toast.error(`Failed to fetch profile: ${error.message}`);
-          }
-        } finally {
-          setLoading(false);
-        }
-      }
-    }
-    fetchProfile();
-  }, [address]);
-
-  const handleProfileSave = async (data: ProfileData) => {
-    try {
-      const token = await getToken();
-      await updateProfile({
-        data,
-        token,
-      });
-      setProfileData(data);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(`Failed to update profile: ${error.message}`);
-      }
-    }
-  };
 
   if (!address) {
     return <div>Error loading account</div>;
@@ -102,17 +50,6 @@ export default function AccountDetailFeature() {
       </AppHero>
 
       <div className="space-y-8">
-        {loading ? (
-          <div>Loading profile...</div>
-        ) : (
-          <ProfileCard
-            publicKey={profileData.publicKey}
-            username={profileData.username}
-            avatar={profileData.avatar}
-            xLink={profileData.xLink}
-            onSave={handleProfileSave}
-          />
-        )}
         <AccountTokens address={address} />
         <AccountTransactions address={address} />
       </div>

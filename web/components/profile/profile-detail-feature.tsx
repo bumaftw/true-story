@@ -2,15 +2,18 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { PublicKey } from '@solana/web3.js';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { useParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
 import { ProfileCard, ProfileData } from './profile-ui';
 import { useAuth } from '@/hooks/useAuth';
 import { getProfile } from '@/services/getProfile';
+import { updateProfile } from '@/services/updateProfile';
 import ArticleListFeature from '@/components/article/article-list-feature';
 
 export default function ProfileDetailFeature() {
+  const { publicKey } = useWallet();
   const params = useParams();
   const { getToken } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -60,6 +63,21 @@ export default function ProfileDetailFeature() {
     fetchProfile();
   }, [address]);
 
+  const handleProfileSave = async (data: ProfileData) => {
+    try {
+      const token = await getToken();
+      await updateProfile({
+        data,
+        token,
+      });
+      setProfileData(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(`Failed to update profile: ${error.message}`);
+      }
+    }
+  };
+
   if (!address) {
     return <div>Error loading profile</div>;
   }
@@ -76,6 +94,7 @@ export default function ProfileDetailFeature() {
               username={profileData.username}
               avatar={profileData.avatar}
               xLink={profileData.xLink}
+              onSave={address.toString() === publicKey?.toString() ? handleProfileSave : undefined}
             />
 
             <h2 className="text-xl font-semibold text-center">

@@ -64,7 +64,8 @@ export function UiLayout({
         </div>
         <div className="flex-none space-x-4 flex items-center">
           <WalletButton />
-          <ClusterUiSelect />
+          {/* TODO: hide utill admin part is not implemented */}
+          {/* <ClusterUiSelect /> */}
         </div>
       </header>
 

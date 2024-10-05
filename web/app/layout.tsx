@@ -11,8 +11,10 @@ export const metadata = {
 
 const links: { label: string; path: string }[] = [
   { label: 'Articles', path: '/articles' },
+  { label: 'Profile', path: '/profile' },
   { label: 'Account', path: '/account' },
-  { label: 'Clusters', path: '/clusters' },
+  // TODO: hide utill admin part is not implemented
+  // { label: 'Clusters', path: '/clusters' },
 ];
 
 export default function RootLayout({
