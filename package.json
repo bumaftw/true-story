@@ -11,7 +11,7 @@
     "build": "nx build web",
     "dev": "nx serve web",
     "prettier": "prettier . --write",
-    "start": "nx start dist/web"
+    "start": "next start dist/web"
   },
   "private": true,
   "dependencies": {
