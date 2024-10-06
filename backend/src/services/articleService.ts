@@ -17,7 +17,7 @@ export async function getArticleById(
       {
         model: User,
         as: 'author',
-        attributes: ['id', 'username', 'publicKey'],
+        attributes: ['id', 'publicKey', 'username', 'avatar'],
         required: true,
       },
       {
