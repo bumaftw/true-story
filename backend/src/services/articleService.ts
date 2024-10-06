@@ -33,7 +33,7 @@ export async function getArticleById(
     throw new NotFoundError('Article not found');
   }
 
-  if (!article.payments?.length && article.author?.id !== userId) {
+  if (article.price > 0 && !article.payments?.length && article.author?.id !== userId) {
     article.content = article.content.slice(0, 300);
   }
 

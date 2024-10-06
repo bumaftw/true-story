@@ -114,7 +114,7 @@ export default function ArticleDetailFeature() {
       <div className="prose prose-lg max-w-none">
         <div
           className={`ql-editor ${
-            !isAuthor && !article.payments?.length ? 'line-clamp-3' : ''
+            article.price > 0 && !isAuthor && !article.payments?.length ? 'line-clamp-3' : ''
           }`}
           style={{
             padding: 0,
@@ -125,7 +125,7 @@ export default function ArticleDetailFeature() {
       </div>
 
       {/* Show pay button if user hasn't paid and user is not the author */}
-      {!article.payments?.length && !isAuthor && (
+      {article.price > 0 && !article.payments?.length && !isAuthor && (
         <div className="mt-6">
           {loading ? (
             <button className="btn btn-primary btn-outline" disabled>
