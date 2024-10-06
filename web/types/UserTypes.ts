@@ -4,10 +4,11 @@ export type UserAttributes = {
   id: number;
   publicKey: string;
   role: UserRole;
-  username: string | null;
+  username?: string | null;
   nonce?: string | null;
-  avatar: string | null;
-  xLink: string | null;
+  avatar?: string | null;
+  xLink?: string | null;
+  bio?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

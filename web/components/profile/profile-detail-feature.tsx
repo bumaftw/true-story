@@ -21,6 +21,7 @@ export default function ProfileDetailFeature() {
     username: null,
     avatar: null,
     xLink: null,
+    bio: null,
   });
   const [loading, setLoading] = useState(true);
 
@@ -45,12 +46,7 @@ export default function ProfileDetailFeature() {
             token,
             publicKey: address.toString(),
           });
-          setProfileData({
-            publicKey: profile.publicKey,
-            username: profile.username,
-            avatar: profile.avatar,
-            xLink: profile.xLink,
-          });
+          setProfileData(profile);
         } catch (error) {
           if (error instanceof Error) {
             toast.error(`Failed to fetch profile: ${error.message}`);
@@ -83,7 +79,7 @@ export default function ProfileDetailFeature() {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-6">
       <div className="max-w-3xl mx-auto space-y-8">
         {loading ? (
           <div className="text-center text-gray-600">Loading profile...</div>
@@ -94,7 +90,12 @@ export default function ProfileDetailFeature() {
               username={profileData.username}
               avatar={profileData.avatar}
               xLink={profileData.xLink}
-              onSave={address.toString() === publicKey?.toString() ? handleProfileSave : undefined}
+              bio={profileData.bio}
+              onSave={
+                address.toString() === publicKey?.toString()
+                  ? handleProfileSave
+                  : undefined
+              }
             />
 
             <h2 className="text-xl font-semibold text-center">

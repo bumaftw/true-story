@@ -29,6 +29,7 @@ export async function updateProfile(
     // TODO: implement image uploading
     avatar: req.body.avatar,
     xLink: req.body.xLink,
+    bio: req.body.bio,
   });
 
   res.json(profile);

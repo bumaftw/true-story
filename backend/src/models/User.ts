@@ -11,13 +11,21 @@ export type UserAttributes = {
   nonce?: string | null;
   avatar?: string | null;
   xLink?: string | null;
+  bio?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type UserCreationAttributes = Optional<
   UserAttributes,
-  'id' | 'username' | 'nonce' | 'avatar' | 'xLink' | 'createdAt' | 'updatedAt'
+  | 'id'
+  | 'username'
+  | 'nonce'
+  | 'avatar'
+  | 'xLink'
+  | 'bio'
+  | 'createdAt'
+  | 'updatedAt'
 >;
 
 export class User
@@ -31,6 +39,7 @@ export class User
   declare nonce: string | null;
   declare avatar: string | null;
   declare xLink: string | null;
+  declare bio: string | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 }
@@ -66,6 +75,10 @@ User.init(
       type: DataTypes.TEXT,
       allowNull: true,
       field: 'x_link',
+    },
+    bio: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,
