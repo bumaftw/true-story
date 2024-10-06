@@ -174,7 +174,7 @@ export function ProfileCard({
 
 export function ProfileLabel({ author }: { author: ProfileData }) {
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4 mx-2">
       <div className="avatar">
         <div className="w-10 h-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
           <img
