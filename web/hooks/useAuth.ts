@@ -15,7 +15,7 @@ export function useAuth() {
 
     try {
       if (!publicKey || !signMessage) {
-        throw new Error('Wallet not connected or signing not supported');
+        return null;
       }
 
       const { nonce } = await request({

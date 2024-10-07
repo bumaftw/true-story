@@ -12,8 +12,8 @@ export const metadata = {
 const links: { label: string; path: string }[] = [
   { label: 'Articles', path: '/articles' },
   { label: 'Profile', path: '/profile' },
-  { label: 'Account', path: '/account' },
-  // TODO: hide utill admin part is not implemented
+  { label: 'Wallet', path: '/wallet' },
+  // TODO: hide util admin part is not implemented
   // { label: 'Clusters', path: '/clusters' },
 ];
 

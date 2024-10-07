@@ -10,7 +10,7 @@ export async function createArticle(
 
 export async function getArticleById(
   id: number,
-  userId: number
+  userId?: number
 ): Promise<Article> {
   const article = await Article.findByPk(id, {
     include: [
@@ -20,12 +20,16 @@ export async function getArticleById(
         attributes: ['id', 'publicKey', 'username', 'avatar'],
         required: true,
       },
-      {
-        model: Payment,
-        as: 'payments',
-        where: { userId },
-        required: false,
-      },
+      ...(userId
+        ? [
+            {
+              model: Payment,
+              as: 'payments',
+              where: { userId },
+              required: false,
+            },
+          ]
+        : []),
     ],
   });
 
@@ -33,8 +37,17 @@ export async function getArticleById(
     throw new NotFoundError('Article not found');
   }
 
-  if (article.price > 0 && !article.payments?.length && article.author?.id !== userId) {
-    article.content = article.content.slice(0, 300);
+  if (article.price > 0) {
+    if (userId) {
+      const userHasAccess =
+        article.payments?.length || article.author?.id === userId;
+      if (!userHasAccess) {
+        article.content = article.content.slice(0, 300);
+      }
+    } else {
+      article.content =
+        article.price > 0 ? article.content.slice(0, 300) : article.content;
+    }
   }
 
   return article;

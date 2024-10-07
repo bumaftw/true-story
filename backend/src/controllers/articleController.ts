@@ -27,7 +27,7 @@ export async function getArticleById(
 ): Promise<void> {
   const article = await articleService.getArticleById(
     parseInt(req.params.id),
-    req.user!.id
+    req.user?.id
   );
 
   res.json(article);

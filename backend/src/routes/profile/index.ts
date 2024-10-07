@@ -8,8 +8,8 @@ import { verifyToken } from '../../middlewares/authMiddleware';
 
 const router = Router();
 
-router.get('/', verifyToken, getProfile);
-router.put('/', verifyToken, updateProfile);
-router.get('/:publicKey', verifyToken, getProfileByPublicKey);
+router.get('/', verifyToken(), getProfile);
+router.put('/', verifyToken(), updateProfile);
+router.get('/:publicKey', getProfileByPublicKey);
 
 export default router;

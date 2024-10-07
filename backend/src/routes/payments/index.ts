@@ -4,6 +4,6 @@ import { verifyToken } from '../../middlewares/authMiddleware';
 
 const router = Router();
 
-router.post('/verify', verifyToken, verifyPayment);
+router.post('/verify', verifyToken(), verifyPayment);
 
 export default router;

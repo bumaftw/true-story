@@ -7,11 +7,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AccountChecker } from '../account/account-ui';
-import {
-  ClusterChecker,
-  ClusterUiSelect,
-  ExplorerLink,
-} from '../cluster/cluster-ui';
+import { ClusterChecker, ExplorerLink } from '../cluster/cluster-ui';
 import toast, { Toaster } from 'react-hot-toast';
 import { TOKEN_STORAGE_KEY } from '@/constants';
 
@@ -63,8 +59,16 @@ export function UiLayout({
           </ul>
         </div>
         <div className="flex-none space-x-4 flex items-center">
+          <Link
+            href="https://organic-dew-c9f.notion.site/5acf0f1d33074635bd2d85ae7961b570?v=d81acf2f780945aa91002f82d131f922"
+            target="_blank"
+          >
+            <button className="btn btn-outline btn-primary">
+              Product Wiki
+            </button>
+          </Link>
           <WalletButton />
-          {/* TODO: hide utill admin part is not implemented */}
+          {/* TODO: hide until admin part is not implemented */}
           {/* <ClusterUiSelect /> */}
         </div>
       </header>

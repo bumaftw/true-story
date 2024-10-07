@@ -8,8 +8,8 @@ import { verifyToken } from '../../middlewares/authMiddleware';
 
 const router = Router();
 
-router.get('/', verifyToken, getArticles);
-router.post('/', verifyToken, createArticle);
-router.get('/:id', verifyToken, getArticleById);
+router.get('/', getArticles);
+router.post('/', verifyToken(), createArticle);
+router.get('/:id', verifyToken({ required: false }), getArticleById);
 
 export default router;

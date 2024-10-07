@@ -26,12 +26,12 @@ export default function ArticleDetailFeature() {
   const articleId = Array.isArray(id) ? id[0] : id;
 
   const { data: article, refetch } = useQuery({
-    queryKey: [ARTICLE_QUERY_KEY, articleId],
+    queryKey: [ARTICLE_QUERY_KEY, articleId, connected],
     queryFn: async () => {
       const token = await getToken();
       return await getArticle({ id: parseInt(articleId), token });
     },
-    enabled: connected && !!articleId,
+    enabled: !!articleId,
   });
 
   const mutation = useMutation({
@@ -70,16 +70,6 @@ export default function ArticleDetailFeature() {
     }
   };
 
-  if (!connected) {
-    return (
-      <div className="hero py-[64px]">
-        <div className="hero-content text-center">
-          <WalletButton />
-        </div>
-      </div>
-    );
-  }
-
   if (!article) {
     return <div className="text-center py-20">Loading article...</div>;
   }
@@ -114,7 +104,9 @@ export default function ArticleDetailFeature() {
       <div className="prose prose-lg max-w-none">
         <div
           className={`ql-editor ${
-            article.price > 0 && !isAuthor && !article.payments?.length ? 'line-clamp-3' : ''
+            article.price > 0 && !isAuthor && !article.payments?.length
+              ? 'line-clamp-3'
+              : ''
           }`}
           style={{
             padding: 0,
@@ -132,10 +124,12 @@ export default function ArticleDetailFeature() {
               <div className="loading"></div>
               Processing Payment...
             </button>
-          ) : (
+          ) : connected ? (
             <button className="btn btn-primary" onClick={handlePayment}>
               Pay {article.price} to read full article
             </button>
+          ) : (
+            <WalletButton />
           )}
         </div>
       )}
