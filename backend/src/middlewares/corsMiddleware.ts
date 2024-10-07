@@ -3,7 +3,7 @@ import config from '../shared/config';
 
 const clientOrigin = config.get('CLIENT_ORIGIN');
 
-const allowedOrigins = [clientOrigin];
+const allowedOrigins = clientOrigin.split(',');
 
 export function corsMiddleware(
   req: Request,
