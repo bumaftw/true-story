@@ -9,6 +9,8 @@ export function useAuth() {
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const [authError, setAuthError] = useState<Error | null>(null);
 
+  const getTokenKey = (publicKey: string) => `${TOKEN_STORAGE_KEY}_${publicKey}`;
+
   const authenticate = async () => {
     setIsAuthenticating(true);
     setAuthError(null);
@@ -37,7 +39,8 @@ export function useAuth() {
         },
       });
 
-      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+      const tokenKey = getTokenKey(publicKey.toBase58());
+      localStorage.setItem(tokenKey, token);
     } catch (error) {
       console.error('Authentication error:', error);
       if (error instanceof Error) {
@@ -51,14 +54,18 @@ export function useAuth() {
   };
 
   const getToken = async () => {
-    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+    if (!publicKey) return null;
+
+    const tokenKey = getTokenKey(publicKey.toBase58());
+    const token = localStorage.getItem(tokenKey);
+
     if (token) {
       return token;
     }
 
     await authenticate();
 
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
+    return localStorage.getItem(tokenKey);
   };
 
   return { getToken, isAuthenticating, authError };
