@@ -126,7 +126,7 @@ export default function ArticleDetailFeature() {
             </button>
           ) : connected ? (
             <button className="btn btn-primary" onClick={handlePayment}>
-              Pay {article.price} to read full article
+              Pay {article.price}$ to read full article
             </button>
           ) : (
             <WalletButton />

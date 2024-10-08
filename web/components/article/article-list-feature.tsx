@@ -119,7 +119,7 @@ export default function ArticleListFeature({
                 {/* Read Button */}
                 <Link href={`/articles/${article.id}`} passHref>
                   <button className="btn btn-outline btn-primary hover:btn-primary-focus">
-                    Read
+                    Read for {article.price > 0 ? article.price + '$' : 'free'}
                   </button>
                 </Link>
               </div>
