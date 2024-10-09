@@ -5,7 +5,7 @@ import { SolanaProvider } from '@/components/solana/solana-provider';
 import { ReactQueryProvider } from './react-query-provider';
 
 export const metadata = {
-  title: 'true-story',
+  title: 'TrueStory',
   description: 'Stories worth reading',
 };
 
