@@ -152,7 +152,7 @@ export function ProfileCard({
 
         {/* Button Section */}
         {onSave && (
-          <div className="ml-4 flex items-center justify-center">
+          <div className="mt-4 md:mt-0 md:ml-4 flex items-center justify-center">
             {isEditing ? (
               <button className="btn btn-sm btn-primary" onClick={handleSave}>
                 Save

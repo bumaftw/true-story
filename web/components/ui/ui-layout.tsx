@@ -39,7 +39,7 @@ export function UiLayout({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Fixed Navbar */}
-      <header className="navbar bg-gray-300 text-black py-4 px-4 fixed top-0 w-full z-10">
+      <header className="navbar bg-gray-300 text-black py-4 px-2 fixed top-0 w-full z-10">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center">
             <div className="dropdown md:hidden">
@@ -91,7 +91,7 @@ export function UiLayout({
               target="_blank"
             >
               <button className="btn btn-outline btn-primary">
-                <IconBook className="h-6 w-6" strokeWidth={2} />
+                <IconBook className="h-5 w-5" strokeWidth={2} />
                 <span className="product-wiki-text">Product Wiki</span>
               </button>
             </Link>
