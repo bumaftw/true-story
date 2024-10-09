@@ -96,7 +96,7 @@ export default function ArticleDetailFeature() {
       <div className="flex justify-between items-center mb-5">
         <ProfileLabel author={article.author!} />
         <div className="text-sm text-gray-500">
-          Published on: {format(new Date(article.createdAt), 'MMMM dd, yyyy')}
+          {format(new Date(article.createdAt), 'MMMM dd, yyyy')}
         </div>
       </div>
 

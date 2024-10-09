@@ -262,7 +262,7 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
                 <tr>
                   <th>Signature</th>
                   <th className="text-right">Slot</th>
-                  <th>Block Time</th>
+                  <th className="hidden md:table-cell">Block Time</th>
                   <th className="text-right">Status</th>
                 </tr>
               </thead>
@@ -281,7 +281,7 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
                         label={item.slot.toString()}
                       />
                     </td>
-                    <td>
+                    <td className="hidden md:table-cell">
                       {new Date((item.blockTime ?? 0) * 1000).toISOString()}
                     </td>
                     <td className="text-right">

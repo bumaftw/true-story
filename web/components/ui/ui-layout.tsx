@@ -2,6 +2,7 @@
 
 import { WalletButton } from '../solana/solana-provider';
 import * as React from 'react';
+import { IconMenu2, IconBook } from '@tabler/icons-react';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
@@ -38,42 +39,70 @@ export function UiLayout({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Fixed Navbar */}
-      <header className="navbar bg-gray-300 text-black flex-col md:flex-row py-4 space-y-2 md:space-y-0 px-4 fixed top-0 w-full z-10">
-        <div className="flex-1 flex items-center">
-          <Link className="btn btn-ghost normal-case text-xl" href="/">
-            <img className="h-8 md:h-12" alt="Logo" src="/logo.png" />
-          </Link>
-          <ul className="menu menu-horizontal px-1 space-x-4">
-            {links.map(({ label, path }) => (
-              <li key={path}>
-                <Link
-                  className={`btn btn-sm ${
-                    pathname.startsWith(path) ? 'btn-primary' : ''
-                  }`}
-                  href={path}
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="flex-none space-x-4 flex items-center">
-          <Link
-            href="https://organic-dew-c9f.notion.site/5acf0f1d33074635bd2d85ae7961b570?v=d81acf2f780945aa91002f82d131f922"
-            target="_blank"
-          >
-            <button className="btn btn-outline btn-primary">
-              Product Wiki
-            </button>
-          </Link>
-          <WalletButton />
-          {/* TODO: hide until admin part is not implemented */}
-          {/* <ClusterUiSelect /> */}
+      <header className="navbar bg-gray-300 text-black py-4 px-4 fixed top-0 w-full z-10">
+        <div className="flex justify-between items-center w-full">
+          <div className="flex items-center">
+            <div className="dropdown md:hidden">
+              <label tabIndex={0} className="btn btn-ghost">
+                <IconMenu2 className="h-5 w-5" strokeWidth={2} />
+              </label>
+              <ul
+                tabIndex={0}
+                className="menu menu-compact dropdown-content mt-5 p-2 shadow bg-gray-300 rounded-box w-52 space-y-2"
+              >
+                {links.map(({ label, path }) => (
+                  <li key={path}>
+                    <Link
+                      className={`btn btn-sm w-full ${
+                        pathname.startsWith(path) ? 'btn-primary' : ''
+                      }`}
+                      href={path}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Link className="btn btn-ghost normal-case text-xl px-2" href="/">
+              <img className="h-8 md:h-12" alt="Logo" src="/logo.png" />
+            </Link>
+            <div className="hidden md:flex ml-4">
+              <ul className="menu menu-horizontal px-1 space-x-4">
+                {links.map(({ label, path }) => (
+                  <li key={path}>
+                    <Link
+                      className={`btn btn-sm ${
+                        pathname.startsWith(path) ? 'btn-primary' : ''
+                      }`}
+                      href={path}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-1 md:space-x-2">
+            <Link
+              href="https://organic-dew-c9f.notion.site/5acf0f1d33074635bd2d85ae7961b570"
+              target="_blank"
+            >
+              <button className="btn btn-outline btn-primary">
+                <IconBook className="h-6 w-6" strokeWidth={2} />
+                <span className="product-wiki-text">Product Wiki</span>
+              </button>
+            </Link>
+            <WalletButton />
+            {/* TODO: hide until admin part is not implemented */}
+            {/* <ClusterUiSelect /> */}
+          </div>
         </div>
       </header>
 
-      {/* Adjusted Content Area to account for fixed header and footer */}
+      {/* Content Area */}
       <main className="flex-grow container mx-auto px-4 lg:px-12 mt-20 mb-16">
         <ClusterChecker>
           <AccountChecker />
@@ -155,7 +184,7 @@ export function AppModal({
                 {submitLabel || 'Save'}
               </button>
             )}
-            <button onClick={hide} className="btn btn-outline">
+            <button onClick={hide} className="btn btn-outline btn-xs lg:btn-md">
               Close
             </button>
           </div>
