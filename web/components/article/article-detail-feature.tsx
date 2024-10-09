@@ -34,7 +34,7 @@ export default function ArticleDetailFeature() {
     enabled: !!articleId,
   });
 
-  const mutation = useMutation({
+  const verifyPaymentMutation = useMutation({
     mutationFn: async ({
       articleId,
       signature,
@@ -44,9 +44,6 @@ export default function ArticleDetailFeature() {
     }) => {
       const token = await getToken();
       return await verifyPayment({ articleId, signature, token });
-    },
-    onSuccess: () => {
-      refetch();
     },
   });
 
@@ -62,7 +59,10 @@ export default function ArticleDetailFeature() {
         amount: article.price,
       });
 
-      await mutation.mutateAsync({ articleId: article!.id, signature });
+      await verifyPaymentMutation.mutateAsync({ articleId: article!.id, signature });
+
+      await refetch();
+
       setLoading(false);
     } catch (error) {
       console.error('Payment failed:', error);
