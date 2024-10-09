@@ -4,13 +4,11 @@ import { WalletButton } from '../solana/solana-provider';
 import * as React from 'react';
 import { IconMenu2, IconBook } from '@tabler/icons-react';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AccountChecker } from '../account/account-ui';
 import { ClusterChecker, ExplorerLink } from '../cluster/cluster-ui';
 import toast, { Toaster } from 'react-hot-toast';
-import { TOKEN_STORAGE_KEY } from '@/constants';
 
 export function UiLayout({
   children,
@@ -20,21 +18,6 @@ export function UiLayout({
   links: { label: string; path: string }[];
 }) {
   const pathname = usePathname();
-  const { wallet } = useWallet();
-
-  useEffect(() => {
-    if (!wallet || !wallet.adapter) return;
-
-    const handleDisconnect = () => {
-      localStorage.removeItem(TOKEN_STORAGE_KEY);
-    };
-
-    wallet.adapter.on('disconnect', handleDisconnect);
-
-    return () => {
-      wallet.adapter.off('disconnect', handleDisconnect);
-    };
-  }, [wallet]);
 
   return (
     <div className="min-h-screen flex flex-col">
