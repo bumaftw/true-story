@@ -1,5 +1,6 @@
 'use client';
 
+import { format } from 'date-fns';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { IconRefresh } from '@tabler/icons-react';
@@ -263,7 +264,7 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
                   <th>Signature</th>
                   <th className="text-right">Slot</th>
                   <th className="hidden md:table-cell">Block Time</th>
-                  <th className="text-right">Status</th>
+                  <th className="hidden md:table-cell text-right">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,14 +276,14 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
                         label={ellipsify(item.signature, 8)}
                       />
                     </th>
-                    <td className="font-mono text-right">
+                    <td className="hidden md:table-cell font-mono text-right">
                       <ExplorerLink
                         path={`block/${item.slot}`}
                         label={item.slot.toString()}
                       />
                     </td>
                     <td className="hidden md:table-cell">
-                      {new Date((item.blockTime ?? 0) * 1000).toISOString()}
+                      {format(new Date((item.blockTime ?? 0) * 1000), 'yyyy-MM-dd HH:mm:ss')}
                     </td>
                     <td className="text-right">
                       {item.err ? (
