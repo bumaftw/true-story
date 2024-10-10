@@ -283,7 +283,10 @@ export function AccountTransactions({ address }: { address: PublicKey }) {
                       />
                     </td>
                     <td className="hidden md:table-cell">
-                      {format(new Date((item.blockTime ?? 0) * 1000), 'yyyy-MM-dd HH:mm:ss')}
+                      {format(
+                        new Date((item.blockTime ?? 0) * 1000),
+                        'yyyy-MM-dd HH:mm:ss'
+                      )}
                     </td>
                     <td className="text-right">
                       {item.err ? (

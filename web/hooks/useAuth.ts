@@ -9,7 +9,8 @@ export function useAuth() {
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const [authError, setAuthError] = useState<Error | null>(null);
 
-  const getTokenKey = (publicKey: string) => `${TOKEN_STORAGE_KEY}_${publicKey}`;
+  const getTokenKey = (publicKey: string) =>
+    `${TOKEN_STORAGE_KEY}_${publicKey}`;
 
   const authenticate = async () => {
     setIsAuthenticating(true);

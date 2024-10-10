@@ -27,7 +27,8 @@ export default function DashboardFeature() {
           </h2>
           <ol className="list-decimal pl-6 text-gray-700 space-y-2">
             <li>
-              <strong>Install Phantom Wallet:</strong> Download the Phantom wallet extension from the{' '}
+              <strong>Install Phantom Wallet:</strong> Download the Phantom
+              wallet extension from the{' '}
               <a
                 href="https://phantom.app/"
                 target="_blank"
@@ -39,10 +40,15 @@ export default function DashboardFeature() {
               and add it to your browser.
             </li>
             <li>
-              <strong>Follow the onboarding process:</strong> After installation, either create a new wallet or select an existing wallet to get started.
+              <strong>Follow the onboarding process:</strong> After
+              installation, either create a new wallet or select an existing
+              wallet to get started.
             </li>
             <li>
-              <strong>Set it up for Devnet:</strong> After setting up your wallet, click on your account -&gt; go to Settings -&gt; Developer Settings -&gt; turn on Testnet Mode -&gt; select the Solana Devnet network.
+              <strong>Set it up for Devnet:</strong> After setting up your
+              wallet, click on your account -&gt; go to Settings -&gt; Developer
+              Settings -&gt; turn on Testnet Mode -&gt; select the Solana Devnet
+              network.
             </li>
             <li>
               <strong>Top up your wallet:</strong> Use{' '}
@@ -54,10 +60,12 @@ export default function DashboardFeature() {
               >
                 this faucet
               </a>{' '}
-              to get both SOL (for transaction fees) and USDC tokens to pay for articles.
+              to get both SOL (for transaction fees) and USDC tokens to pay for
+              articles.
             </li>
             <li>
-              <strong>Explore articles:</strong> Browse the latest stories and unlock paid content by making a one-time payment in USDC tokens.
+              <strong>Explore articles:</strong> Browse the latest stories and
+              unlock paid content by making a one-time payment in USDC tokens.
             </li>
           </ol>
         </div>

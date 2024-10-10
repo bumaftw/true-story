@@ -1,4 +1,3 @@
-
 # True-Story
 
 This project is based on the [create-solana-dapp](https://github.com/solana-developers/create-solana-dapp) generator.

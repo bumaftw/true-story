@@ -71,7 +71,10 @@ export function UiLayout({
           <div className="flex items-center space-x-1 md:space-x-2">
             <Link href="/">
               <button className="btn btn-outline btn-primary navbar-button">
-                <IconHelpCircle className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+                <IconHelpCircle
+                  className="h-4 w-4 md:h-5 md:w-5"
+                  strokeWidth={2}
+                />
                 <span className="navbar-button-text">How to Use</span>
               </button>
             </Link>

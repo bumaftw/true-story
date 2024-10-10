@@ -59,7 +59,10 @@ export default function ArticleDetailFeature() {
         amount: article.price,
       });
 
-      await verifyPaymentMutation.mutateAsync({ articleId: article!.id, signature });
+      await verifyPaymentMutation.mutateAsync({
+        articleId: article!.id,
+        signature,
+      });
 
       await refetch();
 
