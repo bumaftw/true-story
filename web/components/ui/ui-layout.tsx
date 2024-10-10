@@ -2,7 +2,7 @@
 
 import { WalletButton } from '../solana/solana-provider';
 import * as React from 'react';
-import { IconMenu2, IconBook } from '@tabler/icons-react';
+import { IconMenu2, IconBook, IconHelpCircle } from '@tabler/icons-react';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -69,13 +69,19 @@ export function UiLayout({
           </div>
 
           <div className="flex items-center space-x-1 md:space-x-2">
+            <Link href="/">
+              <button className="btn btn-outline btn-primary navbar-button">
+                <IconHelpCircle className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+                <span className="navbar-button-text">How to Use</span>
+              </button>
+            </Link>
             <Link
               href="https://organic-dew-c9f.notion.site/5acf0f1d33074635bd2d85ae7961b570"
               target="_blank"
             >
-              <button className="btn btn-outline btn-primary">
-                <IconBook className="h-5 w-5" strokeWidth={2} />
-                <span className="product-wiki-text">Product Wiki</span>
+              <button className="btn btn-outline btn-primary navbar-button">
+                <IconBook className="h-4 w-4 md:h-5 md:w-5" strokeWidth={2} />
+                <span className="navbar-button-text">Product Wiki</span>
               </button>
             </Link>
             <WalletButton />

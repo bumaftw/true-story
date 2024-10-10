@@ -27,12 +27,13 @@ body {
   font-weight: 400;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .wallet-adapter-button {
     font-size: 0 !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    min-width: auto !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    min-width: 34px !important;
+    max-height: 34px !important;
   }
 
   .wallet-adapter-button .wallet-adapter-button-start-icon {
@@ -46,7 +47,16 @@ body {
     height: 24px !important;
   }
 
-  .product-wiki-text {
-    display: none;
+  .navbar-button {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+  }
+
+  .navbar-button-text {
+    display: none !important;
   }
 }
