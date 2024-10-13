@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useTransferToken } from '@/components/account/account-data-access';
 import { WalletButton } from '@/components/solana/solana-provider';
 import { ProfileLabel } from '@/components/profile/profile-ui';
+import Head from 'next/head';
 import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
@@ -81,6 +82,34 @@ export default function ArticleDetailFeature() {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
+      {/* Dynamic Meta Tags for Previews */}
+      <Head>
+        <title>{article.title}</title>
+        <meta name="description" content={article.content.slice(0, 160)} />
+        <meta property="og:title" content={article.title} />
+        <meta
+          property="og:description"
+          content={article.content.slice(0, 160)}
+        />
+        {article.imageUrl && (
+          <meta property="og:image" content={article.imageUrl} />
+        )}
+        <meta
+          property="og:url"
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/articles/${article.id}`}
+        />
+        <meta property="og:type" content="article" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content={article.title} />
+        <meta
+          property="twitter:description"
+          content={article.content.slice(0, 160)}
+        />
+        {article.imageUrl && (
+          <meta property="twitter:image" content={article.imageUrl} />
+        )}
+      </Head>
+
       {/* Article Image */}
       {article.imageUrl && (
         <figure className="mb-8">
