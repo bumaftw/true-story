@@ -9,12 +9,10 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const article = await getArticle({ id: parseInt(params.id), token: null });
 
-  if (!article) {
-    return {
-      title: 'Article not found',
-      description: 'The requested article does not exist.',
-    };
-  }
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const articleUrl = `${baseUrl}/articles/${article.id}`;
+  // TODO: update after image uploading implementation
+  const imageUrl = `${baseUrl}/logo.png`;
 
   return {
     title: article.title,
@@ -22,9 +20,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: article.title,
       description: article.content?.substring(0, 160),
+      url: articleUrl,
       images: [
         {
-          url: article.imageUrl || '/logo.png',
+          url: imageUrl,
           alt: article.title,
         },
       ],
@@ -33,7 +32,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: 'summary_large_image',
       title: article.title,
       description: article.content?.substring(0, 160),
-      images: [article.imageUrl || '/logo.png'],
+      images: [imageUrl],
+    },
+    alternates: {
+      canonical: articleUrl,
     },
   };
 }
