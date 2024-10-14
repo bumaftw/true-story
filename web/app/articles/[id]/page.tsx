@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const articleUrl = `${baseUrl}/articles/${article.id}`;
   // TODO: update after image uploading implementation
-  const imageUrl = `${baseUrl}/logo.png`;
+  const imageUrl = `${baseUrl}/logo-square.png`;
 
   return {
     title: article.title,
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: 'summary',
       title: article.title,
       description: article.content?.substring(0, 160),
       images: [imageUrl],
