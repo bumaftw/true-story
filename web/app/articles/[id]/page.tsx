@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       images: [
         {
           // TODO: update after image uploading implementation
-          url: `${baseUrl}/logo.png`,
+          url: `${baseUrl}/logo-square-black.png`,
           alt: article.title,
         },
       ],
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
       title: article.title,
       description: cleanContent,
       // TODO: update after image uploading implementation
-      images: [`${baseUrl}/logo-square.png`],
+      images: [`${baseUrl}/logo-square-white.png`],
     },
     alternates: {
       canonical: articleUrl,
