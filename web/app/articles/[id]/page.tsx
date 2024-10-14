@@ -2,28 +2,30 @@ import { Metadata } from 'next';
 import { getArticle } from '@/services/getArticle';
 import ArticleDetailFeature from '@/components/article/article-detail-feature';
 
-type PageProps = {
-  params: { id: string };
+function stripHtmlTags(content: string): string {
+  return content.replace(/<[^>]*>/g, '');
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const article = await getArticle({ id: parseInt(params.id), token: null });
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const articleUrl = `${baseUrl}/articles/${article.id}`;
-  // TODO: update after image uploading implementation
-  const imageUrl = `${baseUrl}/logo-square.png`;
+
+  // Strip HTML tags from the content
+  const cleanContent = stripHtmlTags(article.content).substring(0, 160);
 
   return {
     title: article.title,
-    description: article.content?.substring(0, 160),
+    description: cleanContent,
     openGraph: {
       title: article.title,
-      description: article.content?.substring(0, 160),
+      description: cleanContent,
       url: articleUrl,
       images: [
         {
-          url: imageUrl,
+          // TODO: update after image uploading implementation
+          url: `${baseUrl}/logo.png`,
           alt: article.title,
         },
       ],
@@ -31,8 +33,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: {
       card: 'summary',
       title: article.title,
-      description: article.content?.substring(0, 160),
-      images: [imageUrl],
+      description: cleanContent,
+      // TODO: update after image uploading implementation
+      images: [`${baseUrl}/logo-square.png`],
     },
     alternates: {
       canonical: articleUrl,

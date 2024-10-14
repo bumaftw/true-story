@@ -12,6 +12,16 @@ import { useState } from 'react';
 import { useTransferToken } from '@/components/account/account-data-access';
 import { WalletButton } from '@/components/solana/solana-provider';
 import { ProfileLabel } from '@/components/profile/profile-ui';
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  RedditShareButton,
+  TwitterShareButton,
+  FacebookIcon,
+  LinkedinIcon,
+  RedditIcon,
+  XIcon,
+} from 'react-share';
 import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
@@ -78,6 +88,7 @@ export default function ArticleDetailFeature() {
   }
 
   const isAuthor = article.author?.publicKey === publicKey?.toString();
+  const articleUrl = window.location.href;
 
   return (
     <div className="max-w-3xl mx-auto p-4">
@@ -119,6 +130,32 @@ export default function ArticleDetailFeature() {
         ></div>
       </div>
 
+      {/* Updated Date and Social Share Buttons */}
+      {article.updatedAt && (
+        <div className="mt-6 flex justify-between items-center">
+          <div className="text-sm text-gray-500">
+            Updated on: {format(new Date(article.updatedAt), 'MMMM dd, yyyy')}
+          </div>
+          <div className="flex gap-3">
+            <TwitterShareButton url={articleUrl} title={article.title}>
+              <XIcon size={32} round />
+            </TwitterShareButton>
+
+            <FacebookShareButton url={articleUrl} hashtag={'#truestory'}>
+              <FacebookIcon size={32} round />
+            </FacebookShareButton>
+
+            <LinkedinShareButton url={articleUrl}>
+              <LinkedinIcon size={32} round />
+            </LinkedinShareButton>
+
+            <RedditShareButton url={articleUrl} title={article.title}>
+              <RedditIcon size={32} round />
+            </RedditShareButton>
+          </div>
+        </div>
+      )}
+
       {/* Show pay button if user hasn't paid and user is not the author */}
       {article.price > 0 && !article.payments?.length && !isAuthor && (
         <div className="mt-6">
@@ -134,13 +171,6 @@ export default function ArticleDetailFeature() {
           ) : (
             <WalletButton />
           )}
-        </div>
-      )}
-
-      {/* Updated Date */}
-      {article.updatedAt && (
-        <div className="mt-6 text-sm text-gray-500">
-          Updated on: {format(new Date(article.updatedAt), 'MMMM dd, yyyy')}
         </div>
       )}
     </div>
