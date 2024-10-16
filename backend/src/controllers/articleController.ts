@@ -59,7 +59,7 @@ export async function updateArticle(
     content: req.body.content,
     authorId: req.user!.id,
     price: req.body.price,
-  }
+  };
   if (req.body.imageUrl) {
     // TODO: implement image uploading
     updates.imageUrl = req.body.imageUrl;

@@ -139,7 +139,9 @@ export default function EditArticleFeature() {
     return (
       <div className="hero py-[64px]">
         <div className="hero-content text-center">
-          <h1 className="text-2xl font-bold">You are not authorized to edit this article</h1>
+          <h1 className="text-2xl font-bold">
+            You are not authorized to edit this article
+          </h1>
         </div>
       </div>
     );

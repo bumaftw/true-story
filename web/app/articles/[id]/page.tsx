@@ -6,7 +6,11 @@ function stripHtmlTags(content: string): string {
   return content.replace(/<[^>]*>/g, '');
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
   const article = await getArticle({ id: parseInt(params.id), token: null });
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;

@@ -183,9 +183,7 @@ export default function CreateArticleFeature() {
                 className="range"
                 onChange={(e) => setPrice(Number(e.target.value))}
               />
-              <div className="text-center text-gray-500 mt-2">
-                {price} $
-              </div>
+              <div className="text-center text-gray-500 mt-2">{price} $</div>
             </div>
 
             {/* Button Section */}

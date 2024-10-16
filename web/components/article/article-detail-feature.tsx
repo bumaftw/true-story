@@ -113,7 +113,10 @@ export default function ArticleDetailFeature() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold mb-5">{article.title}</h1>
         {isAuthor && (
-          <button onClick={handleEdit} className="btn btn-sm btn-outline btn-secondary input-bordered mb-2">
+          <button
+            onClick={handleEdit}
+            className="btn btn-sm btn-outline btn-secondary input-bordered mb-2"
+          >
             <IconEdit />
             Edit
           </button>
