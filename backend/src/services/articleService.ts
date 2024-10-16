@@ -1,6 +1,6 @@
 import { Article, ArticleCreationAttributes, User, Payment } from '../models';
 import { Op, Sequelize } from 'sequelize';
-import { NotFoundError } from '../shared/errors';
+import { NotFoundError, ForbiddenError } from '../shared/errors';
 
 export async function createArticle(
   articleData: ArticleCreationAttributes
@@ -105,12 +105,16 @@ export async function getArticles(
 
 export async function updateArticle(
   id: number,
-  updates: Partial<Article>
+  updates: Partial<ArticleCreationAttributes>
 ): Promise<Article> {
   const article = await Article.findByPk(id);
 
   if (!article) {
     throw new NotFoundError('Article not found');
+  }
+
+  if (article.authorId !== updates.authorId) {
+    throw new ForbiddenError('Only article author can update the article');
   }
 
   return article.update(updates);

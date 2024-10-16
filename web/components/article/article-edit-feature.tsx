@@ -1,10 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useRouter, useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { createArticle } from '@/services/createArticle';
+import { getArticle } from '@/services/getArticle';
+import { updateArticle } from '@/services/updateArticle';
 import { toast } from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -13,9 +14,12 @@ import { WalletButton } from '@/components/solana/solana-provider';
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
 
-export default function CreateArticleFeature() {
+export const ARTICLE_QUERY_KEY = 'article_query_key';
+
+export default function EditArticleFeature() {
   const router = useRouter();
-  const { connected } = useWallet();
+  const { id }: { id: string } = useParams();
+  const { connected, publicKey } = useWallet();
   const { getToken } = useAuth();
 
   const [title, setTitle] = useState('');
@@ -23,9 +27,28 @@ export default function CreateArticleFeature() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [price, setPrice] = useState(0.2);
   const [loading, setLoading] = useState(false);
+  const [isAuthor, setIsAuthor] = useState(false);
+
+  const { data: article, isSuccess } = useQuery({
+    queryKey: [ARTICLE_QUERY_KEY, id],
+    queryFn: async () => {
+      const token = await getToken();
+      return await getArticle({ id: parseInt(id), token });
+    },
+    enabled: !!id && connected,
+  });
+
+  useEffect(() => {
+    if (isSuccess && article) {
+      setTitle(article.title);
+      setContent(article.content);
+      setPrice(article.price);
+      setIsAuthor(article.author?.publicKey === publicKey?.toString());
+    }
+  }, [isSuccess, article, publicKey]);
 
   const { mutateAsync } = useMutation({
-    mutationKey: ['create-article'],
+    mutationKey: ['update-article'],
     mutationFn: async (input: {
       title: string;
       content: string;
@@ -36,7 +59,8 @@ export default function CreateArticleFeature() {
 
       const token = await getToken();
 
-      const response = await createArticle({
+      const response = await updateArticle({
+        id: parseInt(id),
         token,
         data: {
           title: input.title,
@@ -48,13 +72,13 @@ export default function CreateArticleFeature() {
 
       return response;
     },
-    onSuccess: (article) => {
-      toast.success('Article created successfully!');
-      router.push(`/articles/${article.id}`);
+    onSuccess: () => {
+      toast.success('Article updated successfully!');
+      router.push(`/articles/${id}`);
     },
     onError: (error: Error) => {
       setLoading(false);
-      toast.error(`Failed to create article: ${error.message}`);
+      toast.error(`Failed to update article: ${error.message}`);
     },
   });
 
@@ -90,14 +114,10 @@ export default function CreateArticleFeature() {
     ['bold', 'italic', 'underline', 'strike'],
     ['blockquote'],
     ['link', 'image', 'video'],
-
     [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
     [{ indent: '-1' }, { indent: '+1' }],
-
     [{ header: [1, 2, 3, false] }],
-
     [{ align: [] }],
-
     ['clean'],
   ];
 
@@ -111,19 +131,29 @@ export default function CreateArticleFeature() {
     );
   }
 
+  if (!article) {
+    return <div className="text-center py-20">Loading article...</div>;
+  }
+
+  if (!isAuthor) {
+    return (
+      <div className="hero py-[64px]">
+        <div className="hero-content text-center">
+          <h1 className="text-2xl font-bold">You are not authorized to edit this article</h1>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pt-6 pb-4">
       <div className="max-w-3xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center py-2">
-            <h1 className="text-3xl font-bold text-primary">
-              Create an Article
-            </h1>
+            <h1 className="text-3xl font-bold text-primary">Edit Article</h1>
           </div>
-          <p className="text-gray-500">
-            Share your latest insights and news with the world
-          </p>
+          <p className="text-gray-500">Update your article details below</p>
         </div>
 
         {/* Form Section */}
@@ -152,7 +182,7 @@ export default function CreateArticleFeature() {
                 theme="snow"
                 value={content}
                 onChange={setContent}
-                placeholder="Write your article content here..."
+                placeholder="Edit your article content..."
               />
             </div>
 
@@ -183,9 +213,7 @@ export default function CreateArticleFeature() {
                 className="range"
                 onChange={(e) => setPrice(Number(e.target.value))}
               />
-              <div className="text-center text-gray-500 mt-2">
-                {price} $
-              </div>
+              <div className="text-center text-gray-500 mt-2">{price} $</div>
             </div>
 
             {/* Button Section */}
@@ -196,7 +224,7 @@ export default function CreateArticleFeature() {
                 className="btn btn-outline btn-secondary input-bordered"
                 onClick={() => router.back()}
               >
-                ← Back to Articles
+                ← Back to Article
               </button>
 
               {/* Submit Button */}
@@ -205,7 +233,7 @@ export default function CreateArticleFeature() {
                 className={`btn btn-primary ${loading ? 'loading' : ''}`}
                 disabled={loading}
               >
-                {loading ? 'Creating...' : 'Create Article'}
+                {loading ? 'Updating...' : 'Update Article'}
               </button>
             </div>
           </form>

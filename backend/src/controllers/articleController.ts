@@ -48,3 +48,24 @@ export async function createArticle(
 
   res.json(article);
 }
+
+export async function updateArticle(
+  req: Request<{ id: string }, ArticleAttributes, ArticleCreationAttributes>,
+  res: Response<ArticleAttributes>
+): Promise<void> {
+  const id: number = parseInt(req.params.id);
+  const updates: Partial<ArticleCreationAttributes> = {
+    title: req.body.title,
+    content: req.body.content,
+    authorId: req.user!.id,
+    price: req.body.price,
+  }
+  if (req.body.imageUrl) {
+    // TODO: implement image uploading
+    updates.imageUrl = req.body.imageUrl;
+  }
+
+  const article = await articleService.updateArticle(id, updates);
+
+  res.json(article);
+}

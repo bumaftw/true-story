@@ -5,7 +5,7 @@ import { getArticle } from '@/services/getArticle';
 import { verifyPayment } from '@/services/verifyPayment';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { PublicKey } from '@solana/web3.js';
 import { useState } from 'react';
@@ -22,6 +22,7 @@ import {
   RedditIcon,
   XIcon,
 } from 'react-share';
+import { IconEdit } from '@tabler/icons-react';
 import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
@@ -29,6 +30,7 @@ export const ARTICLE_QUERY_KEY = 'article_query_key';
 export default function ArticleDetailFeature() {
   const { id } = useParams();
   const { connected, publicKey } = useWallet();
+  const router = useRouter();
   const transferTokenMutation = useTransferToken({ address: publicKey! });
   const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -90,6 +92,10 @@ export default function ArticleDetailFeature() {
   const isAuthor = article.author?.publicKey === publicKey?.toString();
   const articleUrl = window.location.href;
 
+  const handleEdit = () => {
+    router.push(`/articles/${article.id}/edit`);
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       {/* Article Image */}
@@ -103,8 +109,16 @@ export default function ArticleDetailFeature() {
         </figure>
       )}
 
-      {/* Article Title */}
-      <h1 className="text-3xl font-bold mb-5">{article.title}</h1>
+      {/* Article Title and Edit Button */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold mb-5">{article.title}</h1>
+        {isAuthor && (
+          <button onClick={handleEdit} className="btn btn-sm btn-outline btn-secondary input-bordered mb-2">
+            <IconEdit />
+            Edit
+          </button>
+        )}
+      </div>
 
       {/* Author and Created Date */}
       <div className="flex justify-between items-center mb-5">
