@@ -102,7 +102,7 @@ export default function ProfileDetailFeature() {
               Articles by {profileData.username || 'this author'}
             </h2>
 
-            <ArticleListFeature publicKey={address.toString()} />
+            <ArticleListFeature authorPublicKey={address.toString()} />
           </>
         )}
       </div>
