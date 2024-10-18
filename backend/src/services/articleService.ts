@@ -58,12 +58,19 @@ export type GetArticlesParams = {
   offset?: number;
   searchQuery?: string | null;
   author?: string | null;
+  userId?: number | null;
 };
 
 export async function getArticles(
   params: GetArticlesParams = {}
 ): Promise<Article[]> {
-  const { limit = 10, offset = 0, searchQuery = null, author = null } = params;
+  const {
+    limit = 10,
+    offset = 0,
+    searchQuery = null,
+    author = null,
+    userId = null,
+  } = params;
 
   const whereClause = {
     ...(searchQuery && {
@@ -85,6 +92,17 @@ export async function getArticles(
         as: 'author',
         attributes: ['id', 'publicKey', 'username', 'avatar'],
       },
+      ...(userId
+        ? [
+            {
+              model: Payment,
+              as: 'payments',
+              where: { userId },
+              required: false,
+              attributes: ['userId'],
+            },
+          ]
+        : []),
     ],
     attributes: {
       include: [

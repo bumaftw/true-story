@@ -10,12 +10,14 @@ export async function getArticles(
   const limit = Number(req.query.limit) || 10;
   const searchQuery = req.query.search ? String(req.query.search) : null;
   const author = req.query.author ? String(req.query.author) : null;
+  const userId = req.user?.id;
 
   const articles = await articleService.getArticles({
     limit,
     offset,
     searchQuery,
     author,
+    userId,
   });
 
   res.json(articles);
