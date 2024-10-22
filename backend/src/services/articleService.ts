@@ -85,9 +85,6 @@ export async function getArticles(
         { content: { [Op.iLike]: `%${searchQuery}%` } },
       ],
     }),
-    ...(author && {
-      '$author.public_key$': author,
-    }),
   };
 
   return Article.findAll({
@@ -97,6 +94,7 @@ export async function getArticles(
         model: User,
         as: 'author',
         attributes: ['id', 'publicKey', 'username', 'avatar'],
+        ...(author && { where: { publicKey: author } }),
       },
       ...(userId
         ? [
