@@ -71,3 +71,14 @@ export async function updateArticle(
 
   res.json(article);
 }
+
+export async function deleteArticle(
+  req: Request<{ id: string }>,
+  res: Response<boolean>
+): Promise<void> {
+  const id: number = parseInt(req.params.id);
+
+  await articleService.deleteArticle(id, req.user!);
+
+  res.json(true);
+}

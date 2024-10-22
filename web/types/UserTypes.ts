@@ -1,4 +1,4 @@
-export type UserRole = 'journalist' | 'reader';
+export type UserRole = 'journalist' | 'reader' | 'admin' | 'moderator';
 
 export type UserAttributes = {
   id: number;

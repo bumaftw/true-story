@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { getUserByPublicKey } from '../services/userService';
+import { UserRole } from '../models';
 
-const SECRET_KEY = process.env.JWT_SECRET_KEY || 'your-secret-key';
+const SECRET_KEY = process.env.JWT_SECRET_KEY || 'jwt-secret-key';
 
 type JwtPayload = {
   publicKey: string;
+  role: UserRole;
 };
 
 export const verifyToken = (

@@ -1,6 +1,6 @@
 import sequelize from './sequelize';
 import './associations';
-import { User, UserAttributes, UserCreationAttributes } from './User';
+import { User, UserRole, UserAttributes, UserCreationAttributes } from './User';
 import {
   Article,
   ArticleAttributes,
@@ -12,6 +12,7 @@ import { Payment, PaymentAttributes } from './Payment';
 export {
   sequelize,
   User,
+  UserRole,
   UserAttributes,
   UserCreationAttributes,
   Article,

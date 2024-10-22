@@ -1,4 +1,10 @@
-import { Article, ArticleCreationAttributes, User, Payment } from '../models';
+import {
+  Article,
+  ArticleCreationAttributes,
+  User,
+  UserRole,
+  Payment,
+} from '../models';
 import { Op, Sequelize } from 'sequelize';
 import { NotFoundError, ForbiddenError } from '../shared/errors';
 
@@ -138,14 +144,22 @@ export async function updateArticle(
   return article.update(updates);
 }
 
-export async function deleteArticle(id: number): Promise<boolean> {
+export async function deleteArticle(id: number, user: User): Promise<void> {
   const article = await Article.findByPk(id);
 
   if (!article) {
     throw new NotFoundError('Article not found');
   }
 
-  await article.destroy();
+  if (
+    user.role !== 'admin' &&
+    user.role !== 'moderator' &&
+    user.id !== article.authorId
+  ) {
+    throw new ForbiddenError(
+      'Only admin, moderator or article author can delete the article'
+    );
+  }
 
-  return true;
+  return article.destroy();
 }

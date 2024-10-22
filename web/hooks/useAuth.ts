@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { request } from '@/api';
 import bs58 from 'bs58';
+import { jwtDecode } from 'jwt-decode';
 import { TOKEN_STORAGE_KEY } from '../constants';
+import { UserRole } from '@/types';
 
 export function useAuth() {
   const { publicKey, signMessage } = useWallet();
@@ -69,5 +71,20 @@ export function useAuth() {
     return localStorage.getItem(tokenKey);
   };
 
-  return { getToken, isAuthenticating, authError };
+  const getUserRole = (): UserRole | null => {
+    if (!publicKey) return null;
+
+    const tokenKey = getTokenKey(publicKey.toBase58());
+    const token = localStorage.getItem(tokenKey);
+
+    if (!token) {
+      return null;
+    }
+
+    const decodedToken: { role: UserRole } = jwtDecode(token);
+
+    return decodedToken.role;
+  };
+
+  return { getToken, getUserRole, isAuthenticating, authError };
 }

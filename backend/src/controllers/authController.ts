@@ -78,7 +78,7 @@ export const verifySignature = async (req: Request, res: Response) => {
       return;
     }
 
-    const token = jwt.sign({ publicKey }, JWT_SECRET_KEY);
+    const token = jwt.sign({ publicKey, role: user.role }, JWT_SECRET_KEY);
 
     user.nonce = null;
     await user.save();

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getArticle } from '@/services/getArticle';
+import { deleteArticle } from '@/services/deleteArticle';
 import { verifyPayment } from '@/services/verifyPayment';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -9,6 +10,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { PublicKey } from '@solana/web3.js';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { useTransferToken } from '@/components/account/account-data-access';
 import { WalletButton } from '@/components/solana/solana-provider';
 import { ProfileLabel } from '@/components/profile/profile-ui';
@@ -22,7 +24,7 @@ import {
   RedditIcon,
   XIcon,
 } from 'react-share';
-import { IconEdit } from '@tabler/icons-react';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
@@ -32,8 +34,9 @@ export default function ArticleDetailFeature() {
   const { connected, publicKey } = useWallet();
   const router = useRouter();
   const transferTokenMutation = useTransferToken({ address: publicKey! });
-  const { getToken } = useAuth();
+  const { getToken, getUserRole } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
 
   const articleId = Array.isArray(id) ? id[0] : id;
 
@@ -85,16 +88,39 @@ export default function ArticleDetailFeature() {
     }
   };
 
+  const deleteArticleMutation = useMutation({
+    mutationFn: async ({ articleId }: { articleId: number }) => {
+      const token = await getToken();
+      return await deleteArticle({ id: articleId, token });
+    },
+    onSuccess: () => {
+      toast.success('Article deleted successfully!');
+      router.push('/articles');
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete article: ${error.message}`);
+      setLoading(false);
+    },
+  });
+
+  const handleDelete = () => {
+    setShowModal(true);
+  };
+
+  const confirmDelete = () => {
+    setLoading(true);
+    deleteArticleMutation.mutate({ articleId: parseInt(articleId) });
+    setShowModal(false);
+  };
+
   if (!article) {
     return <div className="text-center py-20">Loading article...</div>;
   }
 
   const isAuthor = article.author?.publicKey === publicKey?.toString();
+  const userRole = getUserRole();
+  const isAdminOrModerator = userRole === 'admin' || userRole === 'moderator';
   const articleUrl = window.location.href;
-
-  const handleEdit = () => {
-    router.push(`/articles/${article.id}/edit`);
-  };
 
   return (
     <div className="max-w-3xl mx-auto p-4">
@@ -109,18 +135,36 @@ export default function ArticleDetailFeature() {
         </figure>
       )}
 
-      {/* Article Title and Edit Button */}
+      {/* Article Title and Edit/Delete Buttons */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold mb-5">{article.title}</h1>
-        {isAuthor && (
-          <button
-            onClick={handleEdit}
-            className="btn btn-sm btn-outline btn-secondary input-bordered mb-2"
-          >
-            <IconEdit />
-            Edit
-          </button>
-        )}
+        <div className="flex gap-2">
+          {isAuthor && (
+            <button
+              onClick={() => router.push(`/articles/${article.id}/edit`)}
+              className="btn btn-sm btn-outline btn-secondary input-bordered mb-2"
+            >
+              <IconEdit />
+              Edit
+            </button>
+          )}
+          {(isAuthor || isAdminOrModerator) && (
+            <button
+              onClick={handleDelete}
+              className="btn btn-sm btn-outline btn-error mb-2"
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="loading loading-spinner"></div>
+              ) : (
+                <>
+                  <IconTrash />
+                  Delete
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Author and Created Date */}
@@ -188,6 +232,30 @@ export default function ArticleDetailFeature() {
           ) : (
             <WalletButton />
           )}
+        </div>
+      )}
+
+      {/* Modal for delete confirmation */}
+      {showModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Confirm Delete</h3>
+            <p className="py-4">
+              Are you sure you want to delete this article?
+            </p>
+            <div className="modal-action">
+              <button className="btn btn-error" onClick={confirmDelete}>
+                Delete
+              </button>
+              <button
+                className="btn"
+                onClick={() => setShowModal(false)}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

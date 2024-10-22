@@ -4,6 +4,7 @@ import {
   getArticleById,
   createArticle,
   updateArticle,
+  deleteArticle,
 } from '../../controllers/articleController';
 import { verifyToken } from '../../middlewares/authMiddleware';
 
@@ -13,5 +14,6 @@ router.get('/', verifyToken({ required: false }), getArticles);
 router.post('/', verifyToken(), createArticle);
 router.get('/:id', verifyToken({ required: false }), getArticleById);
 router.put('/:id', verifyToken(), updateArticle);
+router.delete('/:id', verifyToken(), deleteArticle);
 
 export default router;

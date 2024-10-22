@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from './sequelize';
 
-export type UserRole = 'journalist' | 'reader';
+export type UserRole = 'journalist' | 'reader' | 'admin' | 'moderator';
 
 export type UserAttributes = {
   id: number;
@@ -34,7 +34,7 @@ export class User
 {
   declare id: number;
   declare publicKey: string;
-  declare role: 'journalist' | 'reader';
+  declare role: UserRole;
   declare username: string | null;
   declare nonce: string | null;
   declare avatar: string | null;
@@ -58,7 +58,7 @@ User.init(
       field: 'public_key',
     },
     role: {
-      type: DataTypes.ENUM('journalist', 'reader'),
+      type: DataTypes.ENUM('journalist', 'reader', 'admin', 'moderator'),
       allowNull: false,
     },
     username: {
