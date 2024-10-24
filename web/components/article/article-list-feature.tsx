@@ -66,8 +66,8 @@ export default function ArticleListFeature({
         ? await unpinArticle({ id: articleId, token })
         : await pinArticle({ id: articleId, token });
     },
-    onSuccess: () => {
-      refetch();
+    onSuccess: async () => {
+      await refetch();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
     onError: (error) => {
