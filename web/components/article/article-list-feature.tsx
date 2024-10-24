@@ -2,13 +2,21 @@
 
 import { useEffect } from 'react';
 import { format } from 'date-fns';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { getArticlesList } from '@/services/getArticlesList';
+import { pinArticle } from '@/services/pinArticle';
+import { unpinArticle } from '@/services/unpinArticle';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { ProfileLabel } from '@/components/profile/profile-ui';
-import { IconLockOpen2, IconLockFilled } from '@tabler/icons-react';
+import {
+  IconLockOpen2,
+  IconLockFilled,
+  IconPin,
+  IconPinFilled,
+} from '@tabler/icons-react';
 import 'react-quill/dist/quill.snow.css';
 
 const ARTICLES_QUERY_KEY = 'articles_list_query_key';
@@ -21,11 +29,11 @@ type ArticleListFeatureProps = {
 export default function ArticleListFeature({
   authorPublicKey,
 }: ArticleListFeatureProps) {
-  const { getToken } = useAuth();
+  const { getToken, getUserRole } = useAuth();
   const { connecting, connected, publicKey } = useWallet();
 
   // Infinite query for loading more articles
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useInfiniteQuery({
       queryKey: [ARTICLES_QUERY_KEY, authorPublicKey],
       queryFn: async ({ pageParam = 0 }) => {
@@ -45,6 +53,28 @@ export default function ArticleListFeature({
       enabled: !connecting || connected,
     });
 
+  const pinMutation = useMutation({
+    mutationFn: async ({
+      articleId,
+      isPinned,
+    }: {
+      articleId: number;
+      isPinned: boolean;
+    }) => {
+      const token = await getToken();
+      return isPinned
+        ? await unpinArticle({ id: articleId, token })
+        : await pinArticle({ id: articleId, token });
+    },
+    onSuccess: () => {
+      refetch();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    onError: (error) => {
+      toast.error(`Failed to pin/unpin article: ${error.message}`);
+    },
+  });
+
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -62,6 +92,9 @@ export default function ArticleListFeature({
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const articles = data?.pages.flat() || [];
+
+  const userRole = getUserRole();
+  const isAdminOrModerator = userRole === 'admin' || userRole === 'moderator';
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -85,6 +118,11 @@ export default function ArticleListFeature({
         {articles.map((article, index) => {
           const isAuthor = article.author?.publicKey === publicKey?.toString();
           const isPaid = article.payments && article.payments.length > 0;
+          const isPinned = !!article.pinnedAt;
+
+          const handlePin = () => {
+            pinMutation.mutate({ articleId: article.id, isPinned });
+          };
 
           return (
             <div
@@ -101,10 +139,23 @@ export default function ArticleListFeature({
                 </figure>
               ) : null}
               <div className="card-body">
-                <h2 className="card-title text-2xl font-semibold">
-                  {article.title}
-                </h2>
-
+                <div className="flex justify-between items-center">
+                  <h2 className="card-title text-2xl font-semibold">
+                    {article.title}
+                  </h2>
+                  {isAdminOrModerator && (
+                    <button
+                      className="btn btn-sm btn-circle btn-ghost flex items-center"
+                      onClick={handlePin}
+                    >
+                      {isPinned ? (
+                        <IconPinFilled size={20} />
+                      ) : (
+                        <IconPin size={20} />
+                      )}
+                    </button>
+                  )}
+                </div>
                 <div className="flex justify-between items-center my-2">
                   {!authorPublicKey ? (
                     <ProfileLabel author={article.author!} />
@@ -147,7 +198,7 @@ export default function ArticleListFeature({
           );
         })}
 
-        {/* Loading more spinner for pagination */}
+        {/* Loading spinner for pagination */}
         {isFetchingNextPage && (
           <div className="text-center py-6">
             <span className="loading loading-spinner loading-lg"></span>

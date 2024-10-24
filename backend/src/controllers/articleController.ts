@@ -82,3 +82,25 @@ export async function deleteArticle(
 
   res.json(true);
 }
+
+export async function pinArticle(
+  req: Request<{ id: string }>,
+  res: Response<boolean>
+): Promise<void> {
+  const id: number = parseInt(req.params.id);
+
+  await articleService.updateArticlePinedStatus(id, new Date(), req.user!);
+
+  res.json(true);
+}
+
+export async function unpinArticle(
+  req: Request<{ id: string }>,
+  res: Response<boolean>
+): Promise<void> {
+  const id: number = parseInt(req.params.id);
+
+  await articleService.updateArticlePinedStatus(id, null, req.user!);
+
+  res.json(true);
+}

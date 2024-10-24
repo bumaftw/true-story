@@ -1,10 +1,4 @@
-import {
-  Article,
-  ArticleCreationAttributes,
-  User,
-  UserRole,
-  Payment,
-} from '../models';
+import { Article, ArticleCreationAttributes, User, Payment } from '../models';
 import { Op, Sequelize } from 'sequelize';
 import { NotFoundError, ForbiddenError } from '../shared/errors';
 
@@ -121,7 +115,10 @@ export async function getArticles(
     },
     limit,
     offset,
-    order: [['createdAt', 'DESC']],
+    order: [
+      ['pinnedAt', 'ASC'],
+      ['createdAt', 'DESC'],
+    ],
   });
 }
 
@@ -160,4 +157,22 @@ export async function deleteArticle(id: number, user: User): Promise<void> {
   }
 
   return article.destroy();
+}
+
+export async function updateArticlePinedStatus(
+  id: number,
+  pinnedAt: Date | null,
+  user: User
+): Promise<Article> {
+  const article = await Article.findByPk(id);
+
+  if (!article) {
+    throw new NotFoundError('Article not found');
+  }
+
+  if (user.role !== 'admin' && user.role !== 'moderator') {
+    throw new ForbiddenError('Only admin or moderator can pin/unpin articles');
+  }
+
+  return article.update({ pinnedAt });
 }

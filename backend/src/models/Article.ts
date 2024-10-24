@@ -10,13 +10,14 @@ export type ArticleAttributes = {
   imageUrl?: string | null;
   authorId?: number | null;
   price: number;
+  pinnedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type ArticleCreationAttributes = Optional<
   ArticleAttributes,
-  'id' | 'imageUrl' | 'createdAt' | 'updatedAt'
+  'id' | 'imageUrl' | 'pinnedAt' | 'createdAt' | 'updatedAt'
 >;
 
 export class Article
@@ -29,6 +30,7 @@ export class Article
   declare imageUrl: string | null;
   declare authorId: number | null;
   declare price: number;
+  declare pinnedAt: Date | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
   declare author?: NonAttribute<User>;
@@ -69,6 +71,11 @@ Article.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       defaultValue: 0,
+    },
+    pinnedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: 'pinned_at',
     },
     createdAt: {
       type: DataTypes.DATE,

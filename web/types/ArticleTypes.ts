@@ -8,6 +8,7 @@ export type ArticleAttributes = {
   imageUrl?: string | null;
   authorId?: number | null;
   price: number;
+  pinnedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   author?: UserAttributes;
