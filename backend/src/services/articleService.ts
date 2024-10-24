@@ -164,7 +164,7 @@ export async function updateArticlePinedStatus(
   pinnedAt: Date | null,
   user: User
 ): Promise<Article> {
-  const article = await Article.findByPk(id);
+  const article = await Article.findByPk(id, { attributes: ['id'] });
 
   if (!article) {
     throw new NotFoundError('Article not found');
