@@ -2,6 +2,7 @@ import { User } from './User';
 import { Article } from './Article';
 import { FactCheck } from './FactCheck';
 import { Payment } from './Payment';
+import { SharableLink } from './SharableLink';
 
 User.hasMany(Article, {
   foreignKey: 'authorId',
@@ -44,6 +45,15 @@ Article.hasMany(Payment, {
   as: 'payments',
 });
 Payment.belongsTo(Article, {
+  foreignKey: 'articleId',
+  as: 'article',
+});
+
+Article.hasMany(SharableLink, {
+  foreignKey: 'articleId',
+  as: 'sharableLinks',
+});
+SharableLink.belongsTo(Article, {
   foreignKey: 'articleId',
   as: 'article',
 });

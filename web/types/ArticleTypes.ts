@@ -1,5 +1,6 @@
 import { UserAttributes } from './UserTypes';
 import { PaymentAttributes } from './PaymentTypes';
+import { SharableLinkAttributes } from './SharableLinkTypes';
 
 export type ArticleAttributes = {
   id: number;
@@ -13,4 +14,5 @@ export type ArticleAttributes = {
   updatedAt: Date;
   author?: UserAttributes;
   payments?: PaymentAttributes[];
+  sharableLinks?: SharableLinkAttributes[];
 };

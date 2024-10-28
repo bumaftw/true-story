@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
-import { ArticleAttributes, ArticleCreationAttributes } from '../models';
+import {
+  ArticleAttributes,
+  ArticleCreationAttributes,
+  SharableLinkAttributes,
+} from '../models';
 import * as articleService from '../services/articleService';
 
 export async function getArticles(
@@ -24,12 +28,18 @@ export async function getArticles(
 }
 
 export async function getArticleById(
-  req: Request,
+  req: Request<
+    { id: string },
+    ArticleAttributes,
+    object,
+    { share_token?: string }
+  >,
   res: Response<ArticleAttributes>
 ): Promise<void> {
   const article = await articleService.getArticleById(
     parseInt(req.params.id),
-    req.user?.id
+    req.user?.id,
+    req.query.share_token
   );
 
   res.json(article);
@@ -103,4 +113,21 @@ export async function unpinArticle(
   await articleService.updateArticlePinedStatus(id, null, req.user!);
 
   res.json(true);
+}
+
+export async function generateSharableLink(
+  req: Request<
+    { id: string },
+    SharableLinkAttributes,
+    { signature?: string | null }
+  >,
+  res: Response<SharableLinkAttributes>
+): Promise<void> {
+  const id: number = parseInt(req.params.id);
+  const { signature } = req.body;
+  const userId = req.user!.id;
+
+  const sharableLink = await articleService.shareArticle(id, userId, signature);
+
+  res.json(sharableLink);
 }

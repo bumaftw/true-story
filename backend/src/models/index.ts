@@ -8,6 +8,7 @@ import {
 } from './Article';
 import { FactCheck } from './FactCheck';
 import { Payment, PaymentAttributes } from './Payment';
+import { SharableLink, SharableLinkAttributes } from './SharableLink';
 
 export {
   sequelize,
@@ -21,4 +22,6 @@ export {
   FactCheck,
   Payment,
   PaymentAttributes,
+  SharableLink,
+  SharableLinkAttributes,
 };

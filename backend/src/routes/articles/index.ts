@@ -7,6 +7,7 @@ import {
   deleteArticle,
   pinArticle,
   unpinArticle,
+  generateSharableLink,
 } from '../../controllers/articleController';
 import { verifyToken } from '../../middlewares/authMiddleware';
 
@@ -19,5 +20,6 @@ router.put('/:id', verifyToken(), updateArticle);
 router.delete('/:id', verifyToken(), deleteArticle);
 router.put('/:id/pin', verifyToken(), pinArticle);
 router.put('/:id/unpin', verifyToken(), unpinArticle);
+router.post('/:id/share', verifyToken(), generateSharableLink);
 
 export default router;

@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional, NonAttribute } from 'sequelize';
 import sequelize from './sequelize';
 import { User } from './User';
 import { Payment } from './Payment';
+import { SharableLink } from './SharableLink';
 
 export type ArticleAttributes = {
   id: number;
@@ -35,6 +36,7 @@ export class Article
   declare readonly updatedAt: Date;
   declare author?: NonAttribute<User>;
   declare payments?: NonAttribute<Payment[]>;
+  declare sharableLinks?: NonAttribute<SharableLink[]>;
 }
 
 Article.init(

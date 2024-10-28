@@ -1,6 +1,17 @@
-import { Article, ArticleCreationAttributes, User, Payment } from '../models';
+import {
+  Article,
+  ArticleCreationAttributes,
+  User,
+  Payment,
+  SharableLink,
+} from '../models';
 import { Op, Sequelize } from 'sequelize';
-import { NotFoundError, ForbiddenError } from '../shared/errors';
+import {
+  ValidationError,
+  NotFoundError,
+  ForbiddenError,
+} from '../shared/errors';
+import * as paymentService from '../services/paymentService';
 
 export async function createArticle(
   articleData: ArticleCreationAttributes
@@ -10,7 +21,8 @@ export async function createArticle(
 
 export async function getArticleById(
   id: number,
-  userId?: number
+  userId?: number,
+  shareToken?: string
 ): Promise<Article> {
   const article = await Article.findByPk(id, {
     include: [
@@ -25,7 +37,19 @@ export async function getArticleById(
             {
               model: Payment,
               as: 'payments',
+              attributes: ['userId'],
               where: { userId },
+              required: false,
+            },
+          ]
+        : []),
+      ...(shareToken
+        ? [
+            {
+              model: SharableLink,
+              as: 'sharableLinks',
+              attributes: ['uuid'],
+              where: { uuid: shareToken },
               required: false,
             },
           ]
@@ -37,7 +61,7 @@ export async function getArticleById(
     throw new NotFoundError('Article not found');
   }
 
-  if (article.price > 0) {
+  if (article.price > 0 && !article.sharableLinks?.length) {
     if (userId) {
       const userHasAccess =
         article.payments?.length || article.author?.id === userId;
@@ -45,8 +69,7 @@ export async function getArticleById(
         article.content = article.content.slice(0, 300);
       }
     } else {
-      article.content =
-        article.price > 0 ? article.content.slice(0, 300) : article.content;
+      article.content = article.content.slice(0, 300);
     }
   }
 
@@ -175,4 +198,28 @@ export async function updateArticlePinedStatus(
   }
 
   return article.update({ pinnedAt });
+}
+
+export async function shareArticle(
+  id: number,
+  userId: number,
+  signature?: string | null
+): Promise<SharableLink> {
+  const article = await Article.findByPk(id, {
+    attributes: ['id', 'authorId'],
+  });
+
+  if (!article) {
+    throw new NotFoundError('Article not found');
+  }
+
+  if (userId !== article.authorId) {
+    if (!signature) {
+      throw new ValidationError('Transaction signature is missing');
+    }
+
+    await paymentService.verifyTokenPayment(id, userId, signature);
+  }
+
+  return SharableLink.create({ articleId: article.id });
 }

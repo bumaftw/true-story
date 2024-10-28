@@ -4,9 +4,10 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { getArticle } from '@/services/getArticle';
 import { deleteArticle } from '@/services/deleteArticle';
 import { verifyPayment } from '@/services/verifyPayment';
+import { generateSharableLink } from '@/services/generateSharableLink';
 import { useAuth } from '@/hooks/useAuth';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { PublicKey } from '@solana/web3.js';
 import { useState } from 'react';
@@ -24,27 +25,30 @@ import {
   RedditIcon,
   XIcon,
 } from 'react-share';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconEdit, IconTrash, IconShare3 } from '@tabler/icons-react';
 import 'react-quill/dist/quill.snow.css';
 
 export const ARTICLE_QUERY_KEY = 'article_query_key';
 
 export default function ArticleDetailFeature() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
   const { connected, publicKey } = useWallet();
   const router = useRouter();
   const transferTokenMutation = useTransferToken({ address: publicKey! });
   const { getToken, getUserRole } = useAuth();
+  const shareToken = searchParams.get('share_token');
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false); // Modal visibility state
+  const [showModal, setShowModal] = useState(false);
+  const [sharableLink, setSharableLink] = useState<string | null>(null);
 
   const articleId = Array.isArray(id) ? id[0] : id;
 
   const { data: article, refetch } = useQuery({
-    queryKey: [ARTICLE_QUERY_KEY, articleId, connected],
+    queryKey: [ARTICLE_QUERY_KEY, articleId, shareToken, connected],
     queryFn: async () => {
       const token = await getToken();
-      return await getArticle({ id: parseInt(articleId), token });
+      return await getArticle({ id: parseInt(articleId), token, shareToken });
     },
     enabled: !!articleId,
   });
@@ -62,11 +66,25 @@ export default function ArticleDetailFeature() {
     },
   });
 
+  const generateSharableLinkMutation = useMutation({
+    mutationFn: async ({
+      articleId,
+      signature,
+    }: {
+      articleId: number;
+      signature: string | null;
+    }) => {
+      const token = await getToken();
+      return await generateSharableLink({ articleId, signature, token });
+    },
+  });
+
   const handlePayment = async () => {
     try {
       if (!article) {
         throw new Error('No article loaded');
       }
+
       setLoading(true);
 
       const signature = await transferTokenMutation.mutateAsync({
@@ -81,6 +99,39 @@ export default function ArticleDetailFeature() {
 
       await refetch();
 
+      setLoading(false);
+    } catch (error) {
+      console.error('Payment failed:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleSharePrePaid = async () => {
+    try {
+      if (!article) {
+        throw new Error('No article loaded');
+      }
+
+      setLoading(true);
+
+      let signature: string | null = null;
+
+      if (!isAuthor) {
+        signature = await transferTokenMutation.mutateAsync({
+          destination: new PublicKey(article.author!.publicKey),
+          amount: article.price,
+        });
+      }
+
+      const sharableLink = await generateSharableLinkMutation.mutateAsync({
+        articleId: article!.id,
+        signature,
+      });
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const shareLink = `${baseUrl}/articles/${article.id}?share_token=${sharableLink.uuid}`;
+      setSharableLink(shareLink);
+      setShowModal(true);
       setLoading(false);
     } catch (error) {
       console.error('Payment failed:', error);
@@ -121,6 +172,11 @@ export default function ArticleDetailFeature() {
   const userRole = getUserRole();
   const isAdminOrModerator = userRole === 'admin' || userRole === 'moderator';
   const articleUrl = window.location.href;
+  const displayFullContent =
+    article.price === 0 ||
+    article.payments?.length ||
+    isAuthor ||
+    article.sharableLinks?.length;
 
   return (
     <div className="max-w-3xl mx-auto p-4">
@@ -142,24 +198,27 @@ export default function ArticleDetailFeature() {
           {isAuthor && (
             <button
               onClick={() => router.push(`/articles/${article.id}/edit`)}
-              className="btn btn-sm btn-outline btn-secondary input-bordered mb-2"
+              className="btn btn-sm btn-outline btn-secondary input-bordered mb-2 flex items-center"
             >
               <IconEdit />
-              Edit
+              <span className="hidden md:inline-block ml-2">Edit</span>
             </button>
           )}
           {(isAuthor || isAdminOrModerator) && (
             <button
               onClick={handleDelete}
-              className="btn btn-sm btn-outline btn-error mb-2"
+              className="btn btn-sm btn-outline btn-error mb-2 flex items-center"
               disabled={loading}
             >
               {loading ? (
-                <div className="loading loading-spinner"></div>
+                <>
+                  <div className="loading loading-spinner"></div>
+                  <span className="hidden md:inline-block ml-2">Delete</span>
+                </>
               ) : (
                 <>
                   <IconTrash />
-                  Delete
+                  <span className="hidden md:inline-block ml-2">Delete</span>
                 </>
               )}
             </button>
@@ -178,11 +237,7 @@ export default function ArticleDetailFeature() {
       {/* Article Content */}
       <div className="prose prose-lg max-w-none">
         <div
-          className={`ql-editor ${
-            article.price > 0 && !isAuthor && !article.payments?.length
-              ? 'line-clamp-3'
-              : ''
-          }`}
+          className={`ql-editor ${!displayFullContent ? 'line-clamp-3' : ''}`}
           style={{
             padding: 0,
             overflow: 'hidden',
@@ -198,6 +253,13 @@ export default function ArticleDetailFeature() {
             Updated on: {format(new Date(article.updatedAt), 'MMMM dd, yyyy')}
           </div>
           <div className="flex gap-3">
+            <button
+              className="btn btn-sm btn-circle btn-primary"
+              onClick={handleSharePrePaid}
+            >
+              <IconShare3 size={23} />
+            </button>
+
             <TwitterShareButton url={articleUrl} title={article.title}>
               <XIcon size={32} round />
             </TwitterShareButton>
@@ -218,7 +280,7 @@ export default function ArticleDetailFeature() {
       )}
 
       {/* Show pay button if user hasn't paid and user is not the author */}
-      {article.price > 0 && !article.payments?.length && !isAuthor && (
+      {!displayFullContent && (
         <div className="mt-6">
           {loading ? (
             <button className="btn btn-primary btn-outline" disabled>
@@ -235,8 +297,39 @@ export default function ArticleDetailFeature() {
         </div>
       )}
 
+      {/* Modal for sharable link */}
+      {showModal && sharableLink && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Shareable Link</h3>
+            <div className="py-4">
+              <input
+                type="text"
+                value={sharableLink}
+                readOnly
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="modal-action">
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  navigator.clipboard.writeText(sharableLink);
+                  toast.success('Link copied to clipboard!');
+                }}
+              >
+                Copy Link
+              </button>
+              <button className="btn" onClick={() => setShowModal(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal for delete confirmation */}
-      {showModal && (
+      {showModal && !sharableLink && (
         <div className="modal modal-open">
           <div className="modal-box">
             <h3 className="font-bold text-lg">Confirm Delete</h3>
