@@ -173,7 +173,7 @@ export default function ArticleDetailFeature() {
   const isAdminOrModerator = userRole === 'admin' || userRole === 'moderator';
   const articleUrl = window.location.href;
   const displayFullContent =
-    article.price === 0 ||
+    article.price == 0 ||
     article.payments?.length ||
     isAuthor ||
     article.sharableLinks?.length;
