@@ -112,6 +112,15 @@ export default function ArticleDetailFeature() {
         throw new Error('No article loaded');
       }
 
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+      if (article.price == 0) {
+        const shareLink = `${baseUrl}/articles/${article.id}`;
+        setSharableLink(shareLink);
+        setShowModal(true);
+        return;
+      }
+
       setLoading(true);
 
       let signature: string | null = null;
@@ -128,7 +137,6 @@ export default function ArticleDetailFeature() {
         signature,
       });
 
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
       const shareLink = `${baseUrl}/articles/${article.id}?share_token=${sharableLink.uuid}`;
       setSharableLink(shareLink);
       setShowModal(true);
